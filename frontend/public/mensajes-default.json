@@ -1,0 +1,44 @@
+{
+  "mensajes": [
+    {
+      "id": 1,
+      "texto": "💰 ¡Crédito aprobado a sola firma!\nSolo con tu DNI puedes acceder a tu préstamo inmediato.\n\n👩‍💼 Ejecutiva: Betty Farroñan\n📲 995799743",
+      "tipo": "prestamo"
+    },
+    {
+      "id": 2,
+      "texto": "💰 Banco Santander tiene un préstamo pre-aprobado para ti.\nAccede rápido, sin papeleos y con tu DNI.\n\n👩‍💼 Ejecutiva: Betty Farroñan\n📲 995799743",
+      "tipo": "prestamo"
+    },
+    {
+      "id": 3,
+      "texto": "💰 ¡Tu oportunidad está aquí!\nPréstamo personal disponible con aprobación inmediata.\nSolo necesitas tu DNI.\n\n👩‍💼 Ejecutiva: Betty Farroñan\n📲 995799743",
+      "tipo": "prestamo"
+    },
+    {
+      "id": 4,
+      "texto": "💳 ¡Ya tienes tu tarjeta Santander aprobada!\nDisfruta beneficios exclusivos y compras sin intereses.\n\n👩‍💼 Ejecutiva: Betty Farroñan\n📲 995799743",
+      "tipo": "tarjeta"
+    },
+    {
+      "id": 5,
+      "texto": "💳 Banco Santander te ofrece tarjeta de crédito con aprobación inmediata.\nEmpieza a disfrutar descuentos y facilidades hoy.\n\n👩‍💼 Ejecutiva: Betty Farroñan\n📲 995799743",
+      "tipo": "tarjeta"
+    },
+    {
+      "id": 6,
+      "texto": "💳 ¡Activa y disfruta tu tarjeta Santander VISA!\nAprovecha promociones y meses sin intereses.\n\n👩‍💼 Ejecutiva: Betty Farroñan\n📲 995799743",
+      "tipo": "tarjeta"
+    },
+    {
+      "id": 7,
+      "texto": "👋 Hola, tienes beneficios disponibles en Banco Santander.\nPuedes acceder a préstamo o tarjeta con tu DNI.\n\n👩‍💼 Ejecutiva: Betty Farroñan\n📲 995799743",
+      "tipo": "bienvenida"
+    },
+    {
+      "id": 8,
+      "texto": "👋 Banco Santander te da la bienvenida.\nTienes opciones de crédito disponibles listas para ti.\n\n👩‍💼 Ejecutiva: Betty Farroñan\n📲 995799743",
+      "tipo": "bienvenida"
+    }
+  ]
+}
