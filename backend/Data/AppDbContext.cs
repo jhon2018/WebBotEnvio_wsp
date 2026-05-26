@@ -45,7 +45,7 @@ public class AppDbContext : DbContext
             e.Property(p => p.CuerpoTexto).IsRequired();
             e.Property(p => p.Tipo).HasMaxLength(50);
 
-            // Seed: las 8 plantillas del spec original (JSON embebido).
+            // Seed: las 8 plantillas con textos profesionales (4 préstamo y 4 tarjeta).
             e.HasData(
                 new PlantillaMensaje
                 {
@@ -54,8 +54,9 @@ public class AppDbContext : DbContext
                     Tipo       = "prestamo",
                     Activo     = true,
                     CuerpoTexto =
-                        "💰 ¡Crédito aprobado a sola firma!\n" +
-                        "Hola {Nombre}, solo con tu DNI puedes acceder a tu préstamo inmediato.\n\n" +
+                        "💰 ¡Hola, {Nombre}! Qué gusto saludarle. Le escribe Betty Farroñan, asesora de Banco Santander.\n\n" +
+                        "Le comento que evaluamos su historial y cuenta con una gran propuesta de *Préstamo de Libre Disponibilidad pre-aprobado* para hoy. El trámite es ágil, seguro y 100% digital, sujeto únicamente a la validación de su DNI.\n\n" +
+                        "¿Le interesaría conocer las opciones de plazos y cuotas a su medida?\n\n" +
                         "👩‍💼 Ejecutiva: Betty Farroñan\n📲 995799743"
                 },
                 new PlantillaMensaje
@@ -65,8 +66,9 @@ public class AppDbContext : DbContext
                     Tipo       = "prestamo",
                     Activo     = true,
                     CuerpoTexto =
-                        "💰 Banco Santander tiene un préstamo pre-aprobado para ti, {Nombre}.\n" +
-                        "Accede rápido, sin papeleos y con tu DNI.\n\n" +
+                        "💰 Estimado/a {Nombre}, espero que se encuentre excelente. Le saluda Betty Farroñan.\n\n" +
+                        "Queremos apoyarle a concretar sus planes e inversiones personales. Por ello, hemos habilitado un *financiamiento de desembolso inmediato a sola firma*. Podrá acceder de manera muy sencilla, sin papeleos ni trámites complejos.\n\n" +
+                        "Con gusto le comparto el simulador de cuotas. ¿Le gustaría que lo revisemos juntos?\n\n" +
                         "👩‍💼 Ejecutiva: Betty Farroñan\n📲 995799743"
                 },
                 new PlantillaMensaje
@@ -76,19 +78,21 @@ public class AppDbContext : DbContext
                     Tipo       = "prestamo",
                     Activo     = true,
                     CuerpoTexto =
-                        "💰 ¡Tu oportunidad está aquí, {Nombre}!\n" +
-                        "Préstamo personal disponible con aprobación inmediata. Solo necesitas tu DNI.\n\n" +
+                        "💰 Hola, {Nombre}. Espero que esté teniendo una productiva semana. Le escribe Betty Farroñan de Banco Santander.\n\n" +
+                        "Le informo que califica para acceder a un *Préstamo Personal con tasa preferencial y aprobación inmediata* gracias a su buen historial financiero. Es una excelente oportunidad para compra de deuda, capital de trabajo o proyectos personales.\n\n" +
+                        "¿Desea que valide en línea el monto máximo disponible para su perfil el día de hoy?\n\n" +
                         "👩‍💼 Ejecutiva: Betty Farroñan\n📲 995799743"
                 },
                 new PlantillaMensaje
                 {
                     Id         = 4,
                     Indice     = 4,
-                    Tipo       = "tarjeta",
+                    Tipo       = "prestamo",
                     Activo     = true,
                     CuerpoTexto =
-                        "💳 ¡Ya tienes tu tarjeta Santander aprobada, {Nombre}!\n" +
-                        "Disfruta beneficios exclusivos y compras sin intereses.\n\n" +
+                        "💰 Buen día, {Nombre}. Qué gusto saludarle. Le saluda Betty Farroñan, asesora comercial.\n\n" +
+                        "Hoy tengo una muy buena noticia: dispone de una campaña especial con un *cupo de financiamiento pre-evaluado* con condiciones de tasa muy competitivas en el mercado actual. Todo el proceso es digital, inmediato y seguro.\n\n" +
+                        "¿Le gustaría que coordinemos una breve llamada o prefiere que le envíe la información por este medio?\n\n" +
                         "👩‍💼 Ejecutiva: Betty Farroñan\n📲 995799743"
                 },
                 new PlantillaMensaje
@@ -98,8 +102,9 @@ public class AppDbContext : DbContext
                     Tipo       = "tarjeta",
                     Activo     = true,
                     CuerpoTexto =
-                        "💳 Banco Santander te ofrece tarjeta de crédito con aprobación inmediata, {Nombre}.\n" +
-                        "Empieza a disfrutar descuentos y facilidades hoy.\n\n" +
+                        "💳 Estimado/a {Nombre}, es un verdadero placer saludarle. Le escribe Betty Farroñan.\n\n" +
+                        "Me alegra informarle que ha sido seleccionado/a para recibir la exclusiva *Tarjeta de Crédito Santander*, con importantes beneficios, acumulación de millas para sus viajes y atractivos descuentos en los mejores establecimientos.\n\n" +
+                        "¿Me permitiría brindarles los detalles para programar el envío sin costo adicional a su domicilio?\n\n" +
                         "👩‍💼 Ejecutiva: Betty Farroñan\n📲 995799743"
                 },
                 new PlantillaMensaje
@@ -109,30 +114,33 @@ public class AppDbContext : DbContext
                     Tipo       = "tarjeta",
                     Activo     = true,
                     CuerpoTexto =
-                        "💳 ¡Activa y disfruta tu tarjeta Santander VISA, {Nombre}!\n" +
-                        "Aprovecha promociones y meses sin intereses.\n\n" +
+                        "💳 Hola, {Nombre}, ¿cómo está? Le saluda Betty Farroñan del Banco Santander.\n\n" +
+                        "Le escribo para compartirle una gran alternativa para su flexibilidad financiera: tiene aprobada su nueva *Tarjeta de Crédito con costo de membresía exonerado* (sujeto a consumo) y la opción exclusiva de realizar compras en cuotas sin intereses en cientos de comercios a nivel nacional.\n\n" +
+                        "Escríbame para confirmar su dirección de entrega y activar todos sus beneficios hoy mismo.\n\n" +
                         "👩‍💼 Ejecutiva: Betty Farroñan\n📲 995799743"
                 },
                 new PlantillaMensaje
                 {
                     Id         = 7,
                     Indice     = 7,
-                    Tipo       = "bienvenida",
+                    Tipo       = "tarjeta",
                     Activo     = true,
                     CuerpoTexto =
-                        "👋 Hola {Nombre}, tienes beneficios disponibles en Banco Santander.\n" +
-                        "Puedes acceder a préstamo o tarjeta con tu DNI.\n\n" +
+                        "💳 Hola, {Nombre}. Espero que se encuentre muy bien. Le saluda Betty Farroñan.\n\n" +
+                        "Para facilitarle sus compras diarias y brindarle un respaldo ante cualquier eventualidad, Banco Santander ha seleccionado su perfil para la asignación directa de su nueva *Tarjeta de Crédito con un límite personalizado*. El proceso de activación es rápido y 100% digital.\n\n" +
+                        "Por favor, coménteme en qué horario le convendría recibir una breve explicación de las promociones activas.\n\n" +
                         "👩‍💼 Ejecutiva: Betty Farroñan\n📲 995799743"
                 },
                 new PlantillaMensaje
                 {
                     Id         = 8,
                     Indice     = 8,
-                    Tipo       = "bienvenida",
+                    Tipo       = "tarjeta",
                     Activo     = true,
                     CuerpoTexto =
-                        "👋 Banco Santander te da la bienvenida, {Nombre}.\n" +
-                        "Tienes opciones de crédito disponibles listas para ti.\n\n" +
+                        "💳 Buen día, {Nombre}. Le saluda Betty Farroñan, asesora de Banco Santander.\n\n" +
+                        "Nos complace invitarle a nuestra campaña preferente de *Tarjetas de Crédito VISA/Mastercard con beneficios Premium*. Disfrute de bonos de bienvenida, acumulación rápida de puntos y la tranquilidad de un respaldo financiero inmediato para lo que necesite.\n\n" +
+                        "¿Le gustaría que validemos sus datos para coordinar la entrega de su tarjeta de manera gratuita y segura?\n\n" +
                         "👩‍💼 Ejecutiva: Betty Farroñan\n📲 995799743"
                 }
             );
