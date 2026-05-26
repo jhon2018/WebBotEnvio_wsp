@@ -162,31 +162,24 @@ public sealed class WahaSenderBackgroundService : BackgroundService
                 detalle.MensajeAsignado = mensajeFinal;
 
                 // ── 8. Seleccionar imagen aleatoria (si hay alguna disponible) ──────────
+                // NOTA: sendImage requiere WAHA Plus. Con el motor WEBJS gratuito se usa
+                // sendText siempre. Si existe una imagen, se adjunta su URL al final del
+                // mensaje para que WhatsApp genere la vista previa automáticamente.
                 string? imagenUrl = SeleccionarImagenAleatoria(rng);
 
-                // ── 9. Enviar POST a WAHA (con o sin imagen) ─────────────────────────
-                bool exitoso;
-                int? ackCode;
-                string? mensajeError;
+                var textoFinal = imagenUrl is not null
+                    ? $"{mensajeFinal}\n\n{imagenUrl}"
+                    : mensajeFinal;
 
-                if (imagenUrl is not null)
-                {
-                    _logger.LogInformation(
-                        "📤 Enviando imagen+texto a {ChatId} | Imagen: {Imagen} | Enviados hoy: {Hoy}/{Limite}",
-                        chatId, Path.GetFileName(imagenUrl), enviadosHoy + 1, config.LimiteDiarioActual);
+                // ── 9. Enviar POST a WAHA usando siempre sendText ─────────────────────────
+                _logger.LogInformation(
+                    "📤 Enviando texto a {ChatId} | Plantilla #{IndPlantilla} | Imagen: {Img} | Enviados hoy: {Hoy}/{Limite}",
+                    chatId, plantilla.Indice,
+                    imagenUrl is not null ? Path.GetFileName(imagenUrl) : "ninguna",
+                    enviadosHoy + 1, config.LimiteDiarioActual);
 
-                    (exitoso, ackCode, mensajeError) = await EnviarImagenAWahaAsync(
-                        config, chatId, mensajeFinal, imagenUrl, stoppingToken);
-                }
-                else
-                {
-                    _logger.LogInformation(
-                        "📤 Enviando texto a {ChatId} | Plantilla #{IndPlantilla} | Enviados hoy: {Hoy}/{Limite}",
-                        chatId, plantilla.Indice, enviadosHoy + 1, config.LimiteDiarioActual);
-
-                    (exitoso, ackCode, mensajeError) = await EnviarAWahaAsync(
-                        config, chatId, mensajeFinal, stoppingToken);
-                }
+                var (exitoso, ackCode, mensajeError) = await EnviarAWahaAsync(
+                    config, chatId, textoFinal, stoppingToken);
 
                 // ── 10. Actualizar estado del DetalleEnvio ──────────────────────────────────
                 detalle.FechaProcesado = DateTime.UtcNow;
@@ -388,83 +381,8 @@ public sealed class WahaSenderBackgroundService : BackgroundService
         [JsonPropertyName("text")]    public string Text    { get; set; } = string.Empty;
     }
 
-    // ── Payload para sendImage ───────────────────────────────────────────────────
-
-    private sealed class WahaImagePayload
-    {
-        [JsonPropertyName("session")] public string   Session { get; set; } = "default";
-        [JsonPropertyName("chatId")]  public string   ChatId  { get; set; } = string.Empty;
-        [JsonPropertyName("file")]    public WahaFile File    { get; set; } = new();
-        [JsonPropertyName("caption")] public string   Caption { get; set; } = string.Empty;
-    }
-
-    private sealed class WahaFile
-    {
-        [JsonPropertyName("url")] public string Url { get; set; } = string.Empty;
-    }
-
-    /// <summary>
-    /// Envía una imagen con texto como caption usando el endpoint /api/sendImage de WAHA.
-    /// La URL de sendImage se deriva reemplazando "sendText" por "sendImage" en el endpoint configurado.
-    /// </summary>
-    private async Task<(bool Exitoso, int? AckCode, string? MensajeError)> EnviarImagenAWahaAsync(
-        Entities.Configuracion config,
-        string chatId,
-        string caption,
-        string imagenUrl,
-        CancellationToken ct)
-    {
-        try
-        {
-            var client = _httpClientFactory.CreateClient("WahaClient");
-
-            // Derivar la URL de sendImage a partir de la URL de sendText configurada.
-            var sendImageUrl = config.WahaEndpointUrl
-                .Replace("sendText", "sendImage", StringComparison.OrdinalIgnoreCase);
-
-            var payload = new WahaImagePayload
-            {
-                Session = config.WahaSession,
-                ChatId  = chatId,
-                File    = new WahaFile { Url = imagenUrl },
-                Caption = caption
-            };
-
-            var json    = JsonSerializer.Serialize(payload);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            using var request = new HttpRequestMessage(HttpMethod.Post, sendImageUrl)
-            {
-                Content = content
-            };
-            request.Headers.Add("X-Api-Key", config.WahaApiKey);
-            request.Headers.Add("Accept", "application/json");
-
-            using var response = await client.SendAsync(request, ct);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var responseBody = await response.Content.ReadAsStringAsync(ct);
-                int? ack = ExtraerAck(responseBody);
-                return (true, ack, null);
-            }
-            else
-            {
-                var errorBody = await response.Content.ReadAsStringAsync(ct);
-                return (false, null, $"[sendImage] HTTP {(int)response.StatusCode}: {errorBody[..Math.Min(errorBody.Length, 300)]}");
-            }
-        }
-        catch (TaskCanceledException)
-        {
-            return (false, null, "Timeout: WAHA no respondió en 30 segundos (sendImage).");
-        }
-        catch (HttpRequestException ex)
-        {
-            return (false, null, $"HttpRequestException (sendImage): {ex.Message}");
-        }
-        catch (Exception ex)
-        {
-            return (false, null, $"Error inesperado (sendImage): {ex.Message}");
-        }
-    }
+    // ── NOTA: EnviarImagenAWahaAsync eliminado ───────────────────────────────────
+    // El endpoint /api/sendImage de WAHA requiere versión Plus (motor WEBJS no lo
+    // soporta y devuelve HTTP 422). Se usa sendText siempre; las imágenes disponibles
+    // se adjuntan como URL en el cuerpo del mensaje para que WhatsApp genere preview.
 }
