@@ -1,0 +1,69 @@
+# ==========================================
+# .NET / C# (Backend)
+# ==========================================
+[Bb]in/
+[Oo]bj/
+[Log]s/
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Archivos de publicación / despliegue
+PublishOutput/
+*.[Pp]ubxml
+*.pubxml.user
+
+# Base de datos SQLite local (No subir base de datos de desarrollo)
+*.db
+*.db-shm
+*.db-wal
+backend/waha_sender.db
+backend/waha_sender.db-shm
+backend/waha_sender.db-wal
+
+# Configuraciones de desarrollo de ASP.NET
+backend/appsettings.Development.json
+
+# ==========================================
+# Node.js / React (Frontend)
+# ==========================================
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+dist-ssr/
+*.local
+
+# Logs de empaquetadores / gestores de paquetes
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Variables de entorno y secretos locales
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+frontend/.env
+frontend/.env.local
+
+# ==========================================
+# Sistemas Operativos y Editores
+# ==========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Archivos temporales de Office / Excel (útiles si editas plantillas de prueba)
+~$*
+*.tmp

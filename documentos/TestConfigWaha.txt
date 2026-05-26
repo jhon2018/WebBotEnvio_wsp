@@ -1,0 +1,16 @@
+.env
+WAHA_API_KEY=119ce04a85dd41818809be61aba87066
+WAHA_DASHBOARD_USERNAME=admin
+WAHA_DASHBOARD_PASSWORD=8a50a38e0bf24819b97ea5f58c6fd05e
+WHATSAPP_SWAGGER_USERNAME=admin
+WHATSAPP_SWAGGER_PASSWORD=8a50a38e0bf24819b97ea5f58c6fd05e
+
+
+
+$body = @{
+    chatId = "51945430381@c.us"
+    text = "Hola desde WAHA en Windows"
+    session = "default"
+} | ConvertTo-Json
+
+Invoke-RestMethod -Uri "http://localhost:3000/api/sendText" -Method Post -Body $body -ContentType "application/json" -Headers @{ "X-Api-Key" = "119ce04a85dd41818809be61aba87066" }
