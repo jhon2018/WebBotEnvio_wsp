@@ -23,10 +23,14 @@ namespace WahaSender.Api.Services;
 /// </summary>
 public sealed class WahaSenderBackgroundService : BackgroundService
 {
+    private static readonly string[] ImageExtensions = [".jpg", ".jpeg", ".png", ".webp"];
+
     private readonly IServiceScopeFactory   _scopeFactory;
     private readonly IEnvioStateService     _stateService;
     private readonly IHttpClientFactory     _httpClientFactory;
     private readonly ILogger<WahaSenderBackgroundService> _logger;
+    private readonly IWebHostEnvironment    _env;
+    private readonly IConfiguration         _config;
 
     // Intervalo de polling cuando el motor está en pausa.
     private static readonly TimeSpan PauseCheckInterval = TimeSpan.FromSeconds(5);
@@ -38,12 +42,16 @@ public sealed class WahaSenderBackgroundService : BackgroundService
         IServiceScopeFactory   scopeFactory,
         IEnvioStateService     stateService,
         IHttpClientFactory     httpClientFactory,
-        ILogger<WahaSenderBackgroundService> logger)
+        ILogger<WahaSenderBackgroundService> logger,
+        IWebHostEnvironment    env,
+        IConfiguration         config)
     {
         _scopeFactory      = scopeFactory;
         _stateService      = stateService;
         _httpClientFactory = httpClientFactory;
         _logger            = logger;
+        _env               = env;
+        _config            = config;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -153,15 +161,34 @@ public sealed class WahaSenderBackgroundService : BackgroundService
                 // Guardar el mensaje asignado para trazabilidad antes de enviar.
                 detalle.MensajeAsignado = mensajeFinal;
 
-                // ── 8. Enviar POST a WAHA ────────────────────────────────────────
-                _logger.LogInformation(
-                    "📤 Enviando a {ChatId} | Plantilla #{IndPlantilla} | Enviados hoy: {Hoy}/{Limite}",
-                    chatId, plantilla.Indice, enviadosHoy + 1, config.LimiteDiarioActual);
+                // ── 8. Seleccionar imagen aleatoria (si hay alguna disponible) ──────────
+                string? imagenUrl = SeleccionarImagenAleatoria(rng);
 
-                var (exitoso, ackCode, mensajeError) = await EnviarAWahaAsync(
-                    config, chatId, mensajeFinal, stoppingToken);
+                // ── 9. Enviar POST a WAHA (con o sin imagen) ─────────────────────────
+                bool exitoso;
+                int? ackCode;
+                string? mensajeError;
 
-                // ── 9. Actualizar estado del DetalleEnvio ────────────────────────
+                if (imagenUrl is not null)
+                {
+                    _logger.LogInformation(
+                        "📤 Enviando imagen+texto a {ChatId} | Imagen: {Imagen} | Enviados hoy: {Hoy}/{Limite}",
+                        chatId, Path.GetFileName(imagenUrl), enviadosHoy + 1, config.LimiteDiarioActual);
+
+                    (exitoso, ackCode, mensajeError) = await EnviarImagenAWahaAsync(
+                        config, chatId, mensajeFinal, imagenUrl, stoppingToken);
+                }
+                else
+                {
+                    _logger.LogInformation(
+                        "📤 Enviando texto a {ChatId} | Plantilla #{IndPlantilla} | Enviados hoy: {Hoy}/{Limite}",
+                        chatId, plantilla.Indice, enviadosHoy + 1, config.LimiteDiarioActual);
+
+                    (exitoso, ackCode, mensajeError) = await EnviarAWahaAsync(
+                        config, chatId, mensajeFinal, stoppingToken);
+                }
+
+                // ── 10. Actualizar estado del DetalleEnvio ──────────────────────────────────
                 detalle.FechaProcesado = DateTime.UtcNow;
 
                 if (exitoso)
@@ -180,10 +207,10 @@ public sealed class WahaSenderBackgroundService : BackgroundService
 
                 await db.SaveChangesAsync(stoppingToken);
 
-                // ── 10. Verificar si el lote padre quedó completado ──────────────
+                // ── 11. Verificar si el lote padre quedó completado ──────────────────
                 await ActualizarEstadoLoteAsync(db, detalle.LoteId, stoppingToken);
 
-                // ── 11. Delay aleatorio anti-spam ────────────────────────────────
+                // ── 12. Delay aleatorio anti-spam ────────────────────────────────────
                 var delaySegundos = rng.Next(config.DelayMinSegundos, config.DelayMaxSegundos + 1);
                 _logger.LogDebug("⏳ Esperando {Delay}s antes del próximo envío...", delaySegundos);
                 await EsperarConCancelacion(TimeSpan.FromSeconds(delaySegundos), stoppingToken);
@@ -203,7 +230,31 @@ public sealed class WahaSenderBackgroundService : BackgroundService
         _logger.LogInformation("🛑 WahaSenderBackgroundService detenido.");
     }
 
-    // ─── Métodos privados ──────────────────────────────────────────────────────
+    // ─── Métodos privados ────────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Escanea wwwroot/imagenes/ y devuelve la URL pública de una imagen elegida
+    /// aleatoriamente. Retorna null si no hay imágenes disponibles.
+    /// </summary>
+    private string? SeleccionarImagenAleatoria(Random rng)
+    {
+        var webRoot = _env.WebRootPath ?? Path.Combine(_env.ContentRootPath, "wwwroot");
+        var carpeta = Path.Combine(webRoot, "imagenes");
+
+        if (!Directory.Exists(carpeta))
+            return null;
+
+        var archivos = Directory.GetFiles(carpeta)
+            .Where(f => ImageExtensions.Contains(Path.GetExtension(f).ToLowerInvariant()))
+            .ToArray();
+
+        if (archivos.Length == 0)
+            return null;
+
+        var nombreImagen = Path.GetFileName(archivos[rng.Next(archivos.Length)]);
+        var baseUrl = _config["ImagenesPublicBaseUrl"]?.TrimEnd('/') ?? "http://host.docker.internal:5000/imagenes";
+        return $"{baseUrl}/{nombreImagen}";
+    }
 
     /// <summary>
     /// Realiza el POST HTTP a WAHA. No lanza excepciones: devuelve una tupla
@@ -328,12 +379,92 @@ public sealed class WahaSenderBackgroundService : BackgroundService
         }
     }
 
-    // ─── Payload WAHA ──────────────────────────────────────────────────────────
+    // ─── Payloads WAHA ────────────────────────────────────────────────────────────
 
     private sealed class WahaPayload
     {
         [JsonPropertyName("session")] public string Session { get; set; } = "default";
         [JsonPropertyName("chatId")]  public string ChatId  { get; set; } = string.Empty;
         [JsonPropertyName("text")]    public string Text    { get; set; } = string.Empty;
+    }
+
+    // ── Payload para sendImage ───────────────────────────────────────────────────
+
+    private sealed class WahaImagePayload
+    {
+        [JsonPropertyName("session")] public string   Session { get; set; } = "default";
+        [JsonPropertyName("chatId")]  public string   ChatId  { get; set; } = string.Empty;
+        [JsonPropertyName("file")]    public WahaFile File    { get; set; } = new();
+        [JsonPropertyName("caption")] public string   Caption { get; set; } = string.Empty;
+    }
+
+    private sealed class WahaFile
+    {
+        [JsonPropertyName("url")] public string Url { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// Envía una imagen con texto como caption usando el endpoint /api/sendImage de WAHA.
+    /// La URL de sendImage se deriva reemplazando "sendText" por "sendImage" en el endpoint configurado.
+    /// </summary>
+    private async Task<(bool Exitoso, int? AckCode, string? MensajeError)> EnviarImagenAWahaAsync(
+        Entities.Configuracion config,
+        string chatId,
+        string caption,
+        string imagenUrl,
+        CancellationToken ct)
+    {
+        try
+        {
+            var client = _httpClientFactory.CreateClient("WahaClient");
+
+            // Derivar la URL de sendImage a partir de la URL de sendText configurada.
+            var sendImageUrl = config.WahaEndpointUrl
+                .Replace("sendText", "sendImage", StringComparison.OrdinalIgnoreCase);
+
+            var payload = new WahaImagePayload
+            {
+                Session = config.WahaSession,
+                ChatId  = chatId,
+                File    = new WahaFile { Url = imagenUrl },
+                Caption = caption
+            };
+
+            var json    = JsonSerializer.Serialize(payload);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            using var request = new HttpRequestMessage(HttpMethod.Post, sendImageUrl)
+            {
+                Content = content
+            };
+            request.Headers.Add("X-Api-Key", config.WahaApiKey);
+            request.Headers.Add("Accept", "application/json");
+
+            using var response = await client.SendAsync(request, ct);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseBody = await response.Content.ReadAsStringAsync(ct);
+                int? ack = ExtraerAck(responseBody);
+                return (true, ack, null);
+            }
+            else
+            {
+                var errorBody = await response.Content.ReadAsStringAsync(ct);
+                return (false, null, $"[sendImage] HTTP {(int)response.StatusCode}: {errorBody[..Math.Min(errorBody.Length, 300)]}");
+            }
+        }
+        catch (TaskCanceledException)
+        {
+            return (false, null, "Timeout: WAHA no respondió en 30 segundos (sendImage).");
+        }
+        catch (HttpRequestException ex)
+        {
+            return (false, null, $"HttpRequestException (sendImage): {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            return (false, null, $"Error inesperado (sendImage): {ex.Message}");
+        }
     }
 }

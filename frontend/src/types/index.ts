@@ -21,6 +21,16 @@ export interface ActualizarConfiguracionDto {
   wahaSession: string;
 }
 
+// ─── Imágenes ────────────────────────────────────────────────────────────────
+
+export interface ImagenInfo {
+  nombre: string;
+  url: string;
+  tamanoBytes: number;
+  fechaSubida: string;
+}
+
+
 // ─── Plantillas ──────────────────────────────────────────────────────────────
 
 export interface Plantilla {

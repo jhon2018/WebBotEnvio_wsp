@@ -2,12 +2,14 @@ import axios from 'axios';
 import type {
   Configuracion,
   ActualizarConfiguracionDto,
+  ImagenInfo,
   Plantilla,
   ActualizarPlantillaConIdDto,
   Metricas,
   LoteResumen,
   DetallesPage,
 } from '../types';
+
 
 // En dev, Vite redirige /api → http://localhost:5000 vía proxy.
 // En producción, usar la URL base del servidor desplegado.
@@ -68,3 +70,19 @@ export const getDetallesLote = (
 export const reintentarFallidos = () =>
   api.post<{ cantidadReencolada: number; mensaje: string }>('/lotes/reintentar-fallidos')
      .then(r => r.data);
+
+// ─── Imágenes ─────────────────────────────────────────────────────────────────
+
+export const getImagenes = (): Promise<ImagenInfo[]> =>
+  api.get<ImagenInfo[]>('/imagenes').then(r => r.data);
+
+export const subirImagen = (archivo: File): Promise<ImagenInfo> => {
+  const form = new FormData();
+  form.append('archivo', archivo);
+  // NO pasar Content-Type manual — Axios auto-genera multipart boundary correcto.
+  return api.post<ImagenInfo>('/imagenes', form).then(r => r.data);
+};
+
+export const eliminarImagen = (nombre: string): Promise<void> =>
+  api.delete(`/imagenes/${encodeURIComponent(nombre)}`).then(() => undefined);
+

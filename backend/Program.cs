@@ -22,6 +22,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     )
 );
 
+// Kestrel: permitir subida de imágenes hasta 10 MB.
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 10 * 1024 * 1024; // 10 MB
+});
+
 // HttpClient dedicado para las llamadas al contenedor WAHA Docker.
 // Timeout de 30 segundos por envío individual.
 builder.Services.AddHttpClient("WahaClient", client =>
@@ -61,6 +67,9 @@ using (var scope = app.Services.CreateScope())
 
 app.UseSwagger();
 app.UseSwaggerUI();
+
+// Servir archivos estáticos desde wwwroot/ (imágenes adjuntas a mensajes).
+app.UseStaticFiles();
 
 app.UseCors("DevPolicy");
 app.UseAuthorization();
