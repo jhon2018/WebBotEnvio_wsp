@@ -78,6 +78,7 @@ public sealed class WahaSenderBackgroundService : BackgroundService
                 // ── 3. Leer configuración actual ────────────────────────────────
                 var config = await db.Configuraciones
                     .AsNoTracking()
+                    .OrderBy(c => c.Id)
                     .FirstOrDefaultAsync(stoppingToken);
 
                 if (config is null)
