@@ -63,6 +63,28 @@ export default function Historial() {
       .finally(() => setLoadingDet(false));
   }, [loteSelec, filtroEstado]);
 
+  // ─── Polling automático (refresco cada 5s sin loader visible) ─────────────
+  useEffect(() => {
+    const id = setInterval(() => {
+      // 1. Refrescar lista de lotes (Dashboard izquierdo)
+      getLotes().then(setLotes).catch(() => {});
+
+      // 2. Refrescar detalles del lote seleccionado (Dashboard derecho)
+      if (loteSelec) {
+        getDetallesLote(
+          loteSelec.id,
+          pagina,
+          TAMANO,
+          filtroEstado === 'Todos' ? undefined : filtroEstado
+        )
+          .then(data => { setDetalles(data.items); setTotal(data.total); })
+          .catch(() => {});
+      }
+    }, 5000); // 5 segundos
+
+    return () => clearInterval(id);
+  }, [loteSelec, pagina, filtroEstado]);
+
   const cambiarPagina = async (nuevaPagina: number) => {
     if (!loteSelec) return;
     setLoadingDet(true);

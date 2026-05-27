@@ -16,14 +16,16 @@ public class LotesController : ControllerBase
 {
     private readonly AppDbContext _db;
     private readonly ILogger<LotesController> _logger;
+    private readonly IEnvioStateService _stateService;
 
     private const int MaxFileSizeMb  = 10;
     private const int MaxFileSizeBytes = MaxFileSizeMb * 1024 * 1024;
 
-    public LotesController(AppDbContext db, ILogger<LotesController> logger)
+    public LotesController(AppDbContext db, ILogger<LotesController> logger, IEnvioStateService stateService)
     {
         _db     = db;
         _logger = logger;
+        _stateService = stateService;
     }
 
     // POST /api/lotes/importar
@@ -110,6 +112,13 @@ public class LotesController : ControllerBase
         _db.LotesEnvios.Add(lote);
         _db.DetallesEnvios.AddRange(detalles);
         await _db.SaveChangesAsync(ct);
+
+        // Si el motor ya está en modo "Activo", lo despertamos para que procese de inmediato
+        // sin tener que esperar el loop de 10 segundos o requerir un toggle manual de Play/Pause.
+        if (_stateService.EstaActivo)
+        {
+            _stateService.Activar();
+        }
 
         _logger.LogInformation(
             "Lote {LoteId} importado: {Total} registros válidos, {Saltados} saltados.",
