@@ -98,7 +98,7 @@ public class LotesController : ControllerBase
             {
                 LoteId          = lote.Id,
                 NumeroCelular   = numeroLimpio,
-                NombreCliente   = c.Nombre.Trim(),
+                NombreCliente   = FormatearNombreCompleto(c.Nombre),
                 Estado          = EstadoDetalle.Pendiente,
                 FechaRegistro   = DateTime.UtcNow
             });
@@ -319,6 +319,13 @@ public class LotesController : ControllerBase
             if (candidatos.Contains(h)) return i;
         }
         return -1;
+    }
+
+    private static string FormatearNombreCompleto(string nombreRaw)
+    {
+        if (string.IsNullOrWhiteSpace(nombreRaw)) return string.Empty;
+        var textInfo = new CultureInfo("es-ES", false).TextInfo;
+        return textInfo.ToTitleCase(nombreRaw.Trim().ToLowerInvariant());
     }
 
     private record ContactoRaw(string Numero, string Nombre);

@@ -156,7 +156,8 @@ public sealed class WahaSenderBackgroundService : BackgroundService
 
                 var rng            = Random.Shared;
                 var plantilla      = plantillas[rng.Next(plantillas.Count)];
-                var mensajeFinal   = plantilla.CuerpoTexto.Replace("{Nombre}", detalle.NombreCliente);
+                var nombreCorto    = ObtenerNombreCorto(detalle.NombreCliente);
+                var mensajeFinal   = plantilla.CuerpoTexto.Replace("{Nombre}", nombreCorto);
                 var chatId         = $"{detalle.NumeroCelular}@c.us";
 
                 // Guardar el mensaje asignado para trazabilidad antes de enviar.
@@ -458,6 +459,21 @@ public sealed class WahaSenderBackgroundService : BackgroundService
             // Si fue el stoppingToken, dejar que el loop principal lo detecte.
             // Si fue el WakeUpToken (usuario presionó Play), simplemente continuar.
         }
+    }
+
+    /// <summary>
+    /// Devuelve un nombre corto para el mensaje basado en la regla 3-2.
+    /// </summary>
+    private static string ObtenerNombreCorto(string nombreCompleto)
+    {
+        if (string.IsNullOrWhiteSpace(nombreCompleto)) return string.Empty;
+        var partes = nombreCompleto.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        
+        int cantidadTomar = partes.Length;
+        if (partes.Length == 4) cantidadTomar = 3;
+        else if (partes.Length == 3) cantidadTomar = 2;
+        
+        return string.Join(" ", partes.Take(cantidadTomar));
     }
 
     // ─── Payloads WAHA ────────────────────────────────────────────────────────────
