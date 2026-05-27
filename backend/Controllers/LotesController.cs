@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using WahaSender.Api.Data;
 using WahaSender.Api.Entities;
 using WahaSender.Api.Helpers;
+using WahaSender.Api.Services;
 
 namespace WahaSender.Api.Controllers;
 
