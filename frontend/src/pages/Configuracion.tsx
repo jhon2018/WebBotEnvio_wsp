@@ -11,17 +11,17 @@ import type { Configuracion, ActualizarConfiguracionDto, ImagenInfo } from '../t
 const MAX_IMAGENES = 5;
 
 export default function Configuracion() {
-  const [cfg,        setCfg]        = useState<Configuracion | null>(null);
-  const [form,       setForm]       = useState<ActualizarConfiguracionDto | null>(null);
-  const [loading,    setLoading]    = useState(true);
-  const [saving,     setSaving]     = useState(false);
-  const [msg,        setMsg]        = useState<{ text: string; ok: boolean } | null>(null);
-  const [showKey,    setShowKey]    = useState(false);
+  const [cfg, setCfg] = useState<Configuracion | null>(null);
+  const [form, setForm] = useState<ActualizarConfiguracionDto | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
+  const [showKey, setShowKey] = useState(false);
 
   // ── Galería de imágenes ──────────────────────────────────────────────────
-  const [imagenes,      setImagenes]      = useState<ImagenInfo[]>([]);
-  const [cargandoImgs,  setCargandoImgs]  = useState(true);
-  const [subiendoImg,   setSubiendoImg]   = useState(false);
+  const [imagenes, setImagenes] = useState<ImagenInfo[]>([]);
+  const [cargandoImgs, setCargandoImgs] = useState(true);
+  const [subiendoImg, setSubiendoImg] = useState(false);
   const [eliminandoImg, setEliminandoImg] = useState<string | null>(null);
   const inputFileRef = useRef<HTMLInputElement>(null);
 
@@ -30,12 +30,12 @@ export default function Configuracion() {
       .then(data => {
         setCfg(data);
         setForm({
-          delayMinSegundos:  data.delayMinSegundos,
-          delayMaxSegundos:  data.delayMaxSegundos,
-          factorIncremento:  data.factorIncremento,
-          wahaApiKey:        data.wahaApiKey,
-          wahaEndpointUrl:   data.wahaEndpointUrl,
-          wahaSession:       data.wahaSession,
+          delayMinSegundos: data.delayMinSegundos,
+          delayMaxSegundos: data.delayMaxSegundos,
+          factorIncremento: data.factorIncremento,
+          wahaApiKey: data.wahaApiKey,
+          wahaEndpointUrl: data.wahaEndpointUrl,
+          wahaSession: data.wahaSession,
         });
       })
       .catch(() => flash('❌ No se pudo cargar la configuración', false))
@@ -43,7 +43,7 @@ export default function Configuracion() {
 
     // Cargar imágenes existentes al montar
     cargarImagenes();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── Helpers ──────────────────────────────────────────────────────────────
@@ -155,7 +155,7 @@ export default function Configuracion() {
         <div className={`fixed top-4 right-4 z-50 px-5 py-3 rounded-xl shadow-xl text-sm font-medium
                          transition-all duration-300 animate-fade-in
                          ${msg.ok ? 'bg-green-500/20 border border-green-500/40 text-green-300'
-                                  : 'bg-red-500/20 border border-red-500/40 text-red-300'}`}>
+            : 'bg-red-500/20 border border-red-500/40 text-red-300'}`}>
           {msg.text}
         </div>
       )}
@@ -174,7 +174,7 @@ export default function Configuracion() {
           disabled={saving || !form}
           className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 active:scale-95
             ${saving ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
-                     : 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20'}`}
+              : 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20'}`}
         >
           {saving ? '⏳ Guardando...' : '💾 Guardar'}
         </button>
@@ -393,7 +393,7 @@ export default function Configuracion() {
               >
                 <span className="text-4xl group-hover:scale-110 transition-transform duration-200">🖼️</span>
                 <p className="text-slate-500 text-sm text-center">
-                  No hay imágenes cargadas.<br/>
+                  No hay imágenes cargadas.<br />
                   <span className="text-purple-400 group-hover:text-purple-300 transition-colors">
                     Haz clic aquí para subir la primera
                   </span>

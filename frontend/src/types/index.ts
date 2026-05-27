@@ -106,14 +106,14 @@ export interface PaisSudamerica {
 }
 
 export const PAISES_SUDAMERICA: PaisSudamerica[] = [
-  { nombre: 'Perú',      codigo: '51',  bandera: '🇵🇪' },
-  { nombre: 'Colombia',  codigo: '57',  bandera: '🇨🇴' },
-  { nombre: 'Chile',     codigo: '56',  bandera: '🇨🇱' },
-  { nombre: 'Argentina', codigo: '54',  bandera: '🇦🇷' },
-  { nombre: 'Ecuador',   codigo: '593', bandera: '🇪🇨' },
-  { nombre: 'Bolivia',   codigo: '591', bandera: '🇧🇴' },
-  { nombre: 'Brasil',    codigo: '55',  bandera: '🇧🇷' },
-  { nombre: 'Uruguay',   codigo: '598', bandera: '🇺🇾' },
-  { nombre: 'Paraguay',  codigo: '595', bandera: '🇵🇾' },
-  { nombre: 'Venezuela', codigo: '58',  bandera: '🇻🇪' },
+  { nombre: 'Perú', codigo: '51', bandera: '🇵🇪' },
+  { nombre: 'Colombia', codigo: '57', bandera: '🇨🇴' },
+  { nombre: 'Chile', codigo: '56', bandera: '🇨🇱' },
+  { nombre: 'Argentina', codigo: '54', bandera: '🇦🇷' },
+  { nombre: 'Ecuador', codigo: '593', bandera: '🇪🇨' },
+  { nombre: 'Bolivia', codigo: '591', bandera: '🇧🇴' },
+  { nombre: 'Brasil', codigo: '55', bandera: '🇧🇷' },
+  { nombre: 'Uruguay', codigo: '598', bandera: '🇺🇾' },
+  { nombre: 'Paraguay', codigo: '595', bandera: '🇵🇾' },
+  { nombre: 'Venezuela', codigo: '58', bandera: '🇻🇪' },
 ];

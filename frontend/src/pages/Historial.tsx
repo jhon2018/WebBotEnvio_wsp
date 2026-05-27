@@ -6,11 +6,11 @@ const ESTADOS_FILTRO = ['Todos', 'Pendiente', 'Procesado', 'Error'];
 
 function estadoBadge(estado: string) {
   const map: Record<string, string> = {
-    Pendiente:    'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
-    'En Progreso':'bg-blue-500/20 text-blue-300 border-blue-500/30',
-    Procesado:    'bg-green-500/20 text-green-300 border-green-500/30',
-    Completado:   'bg-green-500/20 text-green-300 border-green-500/30',
-    Error:        'bg-red-500/20 text-red-300 border-red-500/30',
+    Pendiente: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
+    'En Progreso': 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+    Procesado: 'bg-green-500/20 text-green-300 border-green-500/30',
+    Completado: 'bg-green-500/20 text-green-300 border-green-500/30',
+    Error: 'bg-red-500/20 text-red-300 border-red-500/30',
   };
   return map[estado] ?? 'bg-slate-500/20 text-slate-300 border-slate-500/30';
 }
@@ -24,15 +24,15 @@ function ackLabel(code: number | null) {
 }
 
 export default function Historial() {
-  const [lotes,        setLotes]        = useState<LoteResumen[]>([]);
-  const [loteSelec,    setLoteSelec]    = useState<LoteResumen | null>(null);
-  const [detalles,     setDetalles]     = useState<DetalleEnvio[]>([]);
-  const [total,        setTotal]        = useState(0);
-  const [pagina,       setPagina]       = useState(1);
+  const [lotes, setLotes] = useState<LoteResumen[]>([]);
+  const [loteSelec, setLoteSelec] = useState<LoteResumen | null>(null);
+  const [detalles, setDetalles] = useState<DetalleEnvio[]>([]);
+  const [total, setTotal] = useState(0);
+  const [pagina, setPagina] = useState(1);
   const [filtroEstado, setFiltroEstado] = useState('Todos');
   const [loadingLotes, setLoadingLotes] = useState(true);
-  const [loadingDet,   setLoadingDet]   = useState(false);
-  const [expandMsg,    setExpandMsg]    = useState<number | null>(null);
+  const [loadingDet, setLoadingDet] = useState(false);
+  const [expandMsg, setExpandMsg] = useState<number | null>(null);
 
   const TAMANO = 15;
 
@@ -43,7 +43,7 @@ export default function Historial() {
         setLotes(data);
         if (data.length > 0) setLoteSelec(data[0]);
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoadingLotes(false));
   }, []);
 
@@ -59,7 +59,7 @@ export default function Historial() {
       filtroEstado === 'Todos' ? undefined : filtroEstado,
     )
       .then(data => { setDetalles(data.items); setTotal(data.total); })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoadingDet(false));
   }, [loteSelec, filtroEstado]);
 
@@ -67,7 +67,7 @@ export default function Historial() {
   useEffect(() => {
     const id = setInterval(() => {
       // 1. Refrescar lista de lotes (Dashboard izquierdo)
-      getLotes().then(setLotes).catch(() => {});
+      getLotes().then(setLotes).catch(() => { });
 
       // 2. Refrescar detalles del lote seleccionado (Dashboard derecho)
       if (loteSelec) {
@@ -78,7 +78,7 @@ export default function Historial() {
           filtroEstado === 'Todos' ? undefined : filtroEstado
         )
           .then(data => { setDetalles(data.items); setTotal(data.total); })
-          .catch(() => {});
+          .catch(() => { });
       }
     }, 5000); // 5 segundos
 

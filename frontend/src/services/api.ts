@@ -69,7 +69,7 @@ export const getDetallesLote = (
 
 export const reintentarFallidos = () =>
   api.post<{ cantidadReencolada: number; mensaje: string }>('/lotes/reintentar-fallidos')
-     .then(r => r.data);
+    .then(r => r.data);
 
 // ─── Imágenes ─────────────────────────────────────────────────────────────────
 

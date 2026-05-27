@@ -54,12 +54,12 @@ public class AppDbContext : DbContext
                     Tipo       = "prestamo",
                     Activo     = true,
                     CuerpoTexto =
-                        "✨ ¡Hola, {Nombre}! Qué alegría saludarte. Te escribe Betty Farroñan, tu asesora de Banco Santander.\n\n" +
+                        "✨ ¡Hola, {Nombre}! Qué alegría saludarte. Te escribe *Betty Farroñan*, tu asesora de Banco Santander.\n\n" +
                         "Te comparto una excelente noticia: con una única evaluación de tu DNI, tienes aprobada una *Tarjeta de Crédito* llena de beneficios exclusivos y un *Préstamo Personal* de libre disponibilidad. 🚀\n\n" +
                         "Todo el trámite es 100% digital, rápido y seguro.\n\n" +
                         "¿Te gustaría conocer el límite de tu tarjeta y el monto de tu préstamo?\n\n" +
-                        "👩‍💼 Ejecutiva: Betty Farroñan\n" +
-                        "👉 Confirma aquí: https://wa.link/xe4ext"
+                        "👩‍💼 Ejecutiva: *Betty Farroñan*\n" +
+                        "👉 Confirma aquí: https://wa.link/xe4ext  o 995799743"
                 },
                 new PlantillaMensaje
                 {
@@ -68,12 +68,12 @@ public class AppDbContext : DbContext
                     Tipo       = "prestamo",
                     Activo     = true,
                     CuerpoTexto =
-                        "🌟 Estimado/a {Nombre}, espero que tengas un día excelente. Soy Betty Farroñan.\n\n" +
+                        "🌟 Estimado/a {Nombre}, espero que tengas un día excelente. Soy *Betty Farroñan*.\n\n" +
                         "Queremos premiar tu buen historial. Solo con tu DNI, Banco Santander te ha pre-aprobado un *Préstamo Personal* para lo que necesites, además de una *Tarjeta de Crédito* con descuentos preferenciales. 💳💰\n\n" +
                         "Ambos productos están listos para ser activados sin papeleos.\n\n" +
                         "¿Me permites brindarte los detalles para coordinar la entrega?\n\n" +
-                        "👩‍💼 Ejecutiva: Betty Farroñan\n" +
-                        "👉 Escríbeme aquí: https://wa.link/xe4ext"
+                        "👩‍💼 Ejecutiva: *Betty Farroñan*\n" +
+                        "👉 Escríbeme aquí: https://wa.link/xe4ext o 995799743"
                 },
                 new PlantillaMensaje
                 {
@@ -82,12 +82,12 @@ public class AppDbContext : DbContext
                     Tipo       = "prestamo",
                     Activo     = true,
                     CuerpoTexto =
-                        "💎 ¡Hola, {Nombre}! Soy Betty Farroñan de Banco Santander.\n\n" +
+                        "💎 ¡Hola, {Nombre}! Soy *Betty Farroñan* de Banco Santander.\n\n" +
                         "¡Tu evaluación fue un éxito! Solo presentando tu DNI, has calificado para nuestra campaña VIP: una *Tarjeta de Crédito Santander* y un *Préstamo en Efectivo* inmediato. 🏆\n\n" +
                         "Es la oportunidad perfecta para ordenar tus finanzas y disfrutar de promociones únicas.\n\n" +
                         "¿Te gustaría validar tus montos aprobados en línea?\n\n" +
-                        "👩‍💼 Ejecutiva: Betty Farroñan\n" +
-                        "👉 Solicítalo aquí: https://wa.link/xe4ext"
+                        "👩‍💼 Ejecutiva: *Betty Farroñan*\n" +
+                        "👉 Solicítalo aquí: https://wa.link/xe4ext o 995799743"
                 },
                 new PlantillaMensaje
                 {
@@ -96,12 +96,12 @@ public class AppDbContext : DbContext
                     Tipo       = "prestamo",
                     Activo     = true,
                     CuerpoTexto =
-                        "🎉 Buen día, {Nombre}. Qué gusto saludarte, soy Betty Farroñan.\n\n" +
+                        "🎉 Buen día, {Nombre}. Qué gusto saludarte, soy *Betty Farroñan*.\n\n" +
                         "Hoy tienes acceso a una oferta doble e irrepetible: *Préstamo Personal* con tasa preferencial + *Tarjeta de Crédito*, ¡ambos aprobados con una única evaluación de tu DNI! 💼💳\n\n" +
                         "Cero trámites engorrosos, todo es digital y seguro.\n\n" +
                         "¿Prefieres que te envíe la información por este medio o agendamos una llamada corta?\n\n" +
-                        "👩‍💼 Ejecutiva: Betty Farroñan\n" +
-                        "👉 Contáctame aquí: https://wa.link/xe4ext"
+                        "👩‍💼 Ejecutiva: *Betty Farroñan*\n" +
+                        "👉 Contáctame aquí: https://wa.link/xe4ext o 995799743"
                 },
                 new PlantillaMensaje
                 {
@@ -110,13 +110,13 @@ public class AppDbContext : DbContext
                     Tipo       = "tarjeta",
                     Activo     = true,
                     CuerpoTexto =
-                        "🥇 ¡Hola, {Nombre}! Te saluda Betty Farroñan, tu ejecutiva Santander.\n\n" +
+                        "🥇 ¡Hola, {Nombre}! Te saluda *Betty Farroñan*, tu ejecutiva Santander.\n\n" +
                         "Tengo grandes noticias para ti: gracias a nuestra evaluación ágil (solo con tu DNI), has desbloqueado dos productos exclusivos:\n" +
                         "✅ *Tarjeta de Crédito* (con exoneración de membresía sujeta a uso).\n" +
                         "✅ *Préstamo Personal* (liquidez inmediata a tu cuenta).\n\n" +
                         "Están listos para ti. ¿Coordinamos la entrega de tu tarjeta a domicilio sin costo?\n\n" +
-                        "👩‍💼 Ejecutiva: Betty Farroñan\n" +
-                        "👉 Escríbeme aquí: https://wa.link/xe4ext"
+                        "👩‍💼 Ejecutiva: *Betty Farroñan*\n" +
+                        "👉 Escríbeme aquí: https://wa.link/xe4ext o 995799743"
                 },
                 new PlantillaMensaje
                 {
@@ -125,12 +125,12 @@ public class AppDbContext : DbContext
                     Tipo       = "tarjeta",
                     Activo     = true,
                     CuerpoTexto =
-                        "🌟 {Nombre}, ¡tienes una oportunidad exclusiva esperándote! Soy Betty Farroñan.\n\n" +
+                        "🌟 {Nombre}, ¡tienes una oportunidad exclusiva esperándote! Soy *Betty Farroñan*.\n\n" +
                         "Tu perfil ha sido seleccionado por Banco Santander. Con una única validación de tu DNI, te otorgamos una *Tarjeta de Crédito* para tus compras diarias y un *Préstamo Efectivo* para concretar tus proyectos. 🚀💳\n\n" +
                         "¡Sin trámites extras!\n\n" +
                         "¿Te interesa que revisemos el simulador de cuotas y los beneficios de tu tarjeta?\n\n" +
-                        "👩‍💼 Betty Farroñan\n" +
-                        "👉 Confirma aquí: https://wa.link/xe4ext"
+                        "👩‍💼 *Betty Farroñan*\n" +
+                        "👉 Confirma aquí: https://wa.link/xe4ext o 995799743"
                 },
                 new PlantillaMensaje
                 {
@@ -139,12 +139,12 @@ public class AppDbContext : DbContext
                     Tipo       = "tarjeta",
                     Activo     = true,
                     CuerpoTexto =
-                        "💳 ¡Hola, {Nombre}! Espero que estés genial. Te escribe Betty Farroñan.\n\n" +
+                        "💳 ¡Hola, {Nombre}! Espero que estés genial. Te escribe *Betty Farroñan*.\n\n" +
                         "Queremos facilitarte la vida. Por eso, con solo verificar tu DNI, Santander te ha aprobado un *Préstamo Personal* y una nueva *Tarjeta de Crédito*. 💰✨\n\n" +
                         "Ambos productos te brindarán el respaldo financiero que mereces.\n\n" +
                         "¿A qué hora te viene bien que te explique cómo activar tus beneficios hoy mismo?\n\n" +
-                        "👩‍💼 Ejecutiva: Betty Farroñan\n" +
-                        "👉 Escríbeme aquí: https://wa.link/xe4ext"
+                        "👩‍💼 Ejecutiva: *Betty Farroñan*\n" +
+                        "👉 Escríbeme aquí: https://wa.link/xe4ext o 995799743"
                 },
                 new PlantillaMensaje
                 {
@@ -153,12 +153,12 @@ public class AppDbContext : DbContext
                     Tipo       = "tarjeta",
                     Activo     = true,
                     CuerpoTexto =
-                        "💎 Buen día, {Nombre}. Es un placer saludarte. Soy Betty Farroñan, de Santander.\n\n" +
+                        "💎 Buen día, {Nombre}. Es un placer saludarte. Soy *Betty Farroñan*, de Santander.\n\n" +
                         "Nos complace invitarte a nuestra campaña Premium. Con una sola evaluación de tu DNI, tienes acceso inmediato a una *Tarjeta de Crédito* con bonos de bienvenida y a un *Préstamo Personal* con desembolso ágil. 🌟\n\n" +
                         "Disfruta de la tranquilidad de un respaldo total.\n\n" +
                         "¿Te gustaría que validemos tus datos de forma segura para gestionar la entrega?\n\n" +
-                        "👩‍💼 Ejecutiva: Betty Farroñan\n" +
-                        "👉 Escríbeme aquí: https://wa.link/xe4ext"
+                        "👩‍💼 Ejecutiva: *Betty Farroñan*\n" +
+                        "👉 Escríbeme aquí: https://wa.link/xe4ext  o 995799743"
                 }
             );
         });
