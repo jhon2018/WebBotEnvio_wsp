@@ -59,7 +59,7 @@ public class AppDbContext : DbContext
                         "Todo el trámite es 100% digital, rápido y seguro.\n\n" +
                         "¿Te gustaría conocer el límite de tu tarjeta y el monto de tu préstamo?\n\n" +
                         "👩‍💼 Ejecutiva: Betty Farroñan\n" +
-                        "👉 Confirma aquí: https://wa.me/51995799743?text=Hola%20Betty,%20deseo%20conocer%20mis%20ofertas%20aprobadas"
+                        "👉 Confirma aquí: https://wa.link/xe4ext"
                 },
                 new PlantillaMensaje
                 {
@@ -73,7 +73,7 @@ public class AppDbContext : DbContext
                         "Ambos productos están listos para ser activados sin papeleos.\n\n" +
                         "¿Me permites brindarte los detalles para coordinar la entrega?\n\n" +
                         "👩‍💼 Ejecutiva: Betty Farroñan\n" +
-                        "👉 Escríbeme aquí: https://wa.me/51995799743?text=Hola%20Betty,%20quiero%20activar%20mi%20tarjeta%20y%20pr%C3%A9stamo"
+                        "👉 Escríbeme aquí: https://wa.link/xe4ext"
                 },
                 new PlantillaMensaje
                 {
@@ -87,7 +87,7 @@ public class AppDbContext : DbContext
                         "Es la oportunidad perfecta para ordenar tus finanzas y disfrutar de promociones únicas.\n\n" +
                         "¿Te gustaría validar tus montos aprobados en línea?\n\n" +
                         "👩‍💼 Ejecutiva: Betty Farroñan\n" +
-                        "👉 Solicítalo aquí: https://wa.me/51995799743?text=Hola%20Betty,%20quiero%20validar%20mis%20montos%20aprobados"
+                        "👉 Solicítalo aquí: https://wa.link/xe4ext"
                 },
                 new PlantillaMensaje
                 {
@@ -101,7 +101,7 @@ public class AppDbContext : DbContext
                         "Cero trámites engorrosos, todo es digital y seguro.\n\n" +
                         "¿Prefieres que te envíe la información por este medio o agendamos una llamada corta?\n\n" +
                         "👩‍💼 Ejecutiva: Betty Farroñan\n" +
-                        "👉 Contáctame aquí: https://wa.me/51995799743?text=Hola%20Betty,%20me%20interesa%20la%20oferta%20doble"
+                        "👉 Contáctame aquí: https://wa.link/xe4ext"
                 },
                 new PlantillaMensaje
                 {
@@ -116,7 +116,7 @@ public class AppDbContext : DbContext
                         "✅ *Préstamo Personal* (liquidez inmediata a tu cuenta).\n\n" +
                         "Están listos para ti. ¿Coordinamos la entrega de tu tarjeta a domicilio sin costo?\n\n" +
                         "👩‍💼 Ejecutiva: Betty Farroñan\n" +
-                        "👉 Escríbeme aquí: https://wa.me/51995799743?text=Hola%20Betty,%20quiero%20coordinar%20la%20entrega%20de%20mi%20tarjeta"
+                        "👉 Escríbeme aquí: https://wa.link/xe4ext"
                 },
                 new PlantillaMensaje
                 {
@@ -130,7 +130,7 @@ public class AppDbContext : DbContext
                         "¡Sin trámites extras!\n\n" +
                         "¿Te interesa que revisemos el simulador de cuotas y los beneficios de tu tarjeta?\n\n" +
                         "👩‍💼 Betty Farroñan\n" +
-                        "👉 Confirma aquí: https://wa.me/51995799743?text=Hola%20Betty,%20quiero%20revisar%20las%20cuotas%20y%20beneficios"
+                        "👉 Confirma aquí: https://wa.link/xe4ext"
                 },
                 new PlantillaMensaje
                 {
@@ -144,7 +144,7 @@ public class AppDbContext : DbContext
                         "Ambos productos te brindarán el respaldo financiero que mereces.\n\n" +
                         "¿A qué hora te viene bien que te explique cómo activar tus beneficios hoy mismo?\n\n" +
                         "👩‍💼 Ejecutiva: Betty Farroñan\n" +
-                        "👉 Escríbeme aquí: https://wa.me/51995799743?text=Hola%20Betty,%20quiero%20activar%20mis%20beneficios%20hoy"
+                        "👉 Escríbeme aquí: https://wa.link/xe4ext"
                 },
                 new PlantillaMensaje
                 {
@@ -158,7 +158,7 @@ public class AppDbContext : DbContext
                         "Disfruta de la tranquilidad de un respaldo total.\n\n" +
                         "¿Te gustaría que validemos tus datos de forma segura para gestionar la entrega?\n\n" +
                         "👩‍💼 Ejecutiva: Betty Farroñan\n" +
-                        "👉 Escríbeme aquí: https://wa.me/51995799743?text=Hola%20Betty,%20quiero%20gestionar%20mis%20productos%20Premium"
+                        "👉 Escríbeme aquí: https://wa.link/xe4ext"
                 }
             );
         });
