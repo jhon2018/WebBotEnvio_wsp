@@ -54,11 +54,12 @@ public class AppDbContext : DbContext
                     Tipo       = "prestamo",
                     Activo     = true,
                     CuerpoTexto =
-                        "💰 ¡Hola, {Nombre}! Qué gusto saludarle. Le escribe Betty Farroñan, asesora de Banco Santander.\n\n" +
-                        "Le comento que evaluamos su historial y cuenta con una gran propuesta de *Préstamo de Libre Disponibilidad pre-aprobado* para hoy. El trámite es ágil, seguro y 100% digital, sujeto únicamente a la validación de su DNI.\n\n" +
-                        "¿Le interesaría conocer las opciones de plazos y cuotas a su medida?\n\n" +
+                        "✨ ¡Hola, {Nombre}! Qué alegría saludarte. Te escribe Betty Farroñan, tu asesora de Banco Santander.\n\n" +
+                        "Te comparto una excelente noticia: con una única evaluación de tu DNI, tienes aprobada una *Tarjeta de Crédito* llena de beneficios exclusivos y un *Préstamo Personal* de libre disponibilidad. 🚀\n\n" +
+                        "Todo el trámite es 100% digital, rápido y seguro.\n\n" +
+                        "¿Te gustaría conocer el límite de tu tarjeta y el monto de tu préstamo?\n\n" +
                         "👩‍💼 Ejecutiva: Betty Farroñan\n" +
-                        "👉 Escríbele aquí: https://wa.me/51995799743?text=Hola%20Betty,%20quiero%20informaci%C3%B3n%20sobre%20el%20pr%C3%A9stamo%20aprobado"
+                        "👉 Confirma aquí: https://wa.me/51995799743?text=Hola%20Betty,%20deseo%20conocer%20mis%20ofertas%20aprobadas"
                 },
                 new PlantillaMensaje
                 {
@@ -67,11 +68,12 @@ public class AppDbContext : DbContext
                     Tipo       = "prestamo",
                     Activo     = true,
                     CuerpoTexto =
-                        "💰 Estimado/a {Nombre}, espero que se encuentre excelente. Le saluda Betty Farroñan.\n\n" +
-                        "Queremos apoyarle a concretar sus planes e inversiones personales. Por ello, hemos habilitado un *financiamiento de desembolso inmediato a sola firma*. Podrá acceder de manera muy sencilla, sin papeleos ni trámites complejos.\n\n" +
-                        "Con gusto le comparto el simulador de cuotas. ¿Le gustaría que lo revisemos juntos?\n\n" +
+                        "🌟 Estimado/a {Nombre}, espero que tengas un día excelente. Soy Betty Farroñan.\n\n" +
+                        "Queremos premiar tu buen historial. Solo con tu DNI, Banco Santander te ha pre-aprobado un *Préstamo Personal* para lo que necesites, además de una *Tarjeta de Crédito* con descuentos preferenciales. 💳💰\n\n" +
+                        "Ambos productos están listos para ser activados sin papeleos.\n\n" +
+                        "¿Me permites brindarte los detalles para coordinar la entrega?\n\n" +
                         "👩‍💼 Ejecutiva: Betty Farroñan\n" +
-                        "👉 Escríbele aquí: https://wa.me/51995799743?text=Hola%20Betty,%20me%20interesa%20el%20financiamiento%20inmediato"
+                        "👉 Escríbeme aquí: https://wa.me/51995799743?text=Hola%20Betty,%20quiero%20activar%20mi%20tarjeta%20y%20pr%C3%A9stamo"
                 },
                 new PlantillaMensaje
                 {
@@ -80,11 +82,12 @@ public class AppDbContext : DbContext
                     Tipo       = "prestamo",
                     Activo     = true,
                     CuerpoTexto =
-                        "💰 Hola, {Nombre}. Espero que esté teniendo una productiva semana. Le escribe Betty Farroñan de Banco Santander.\n\n" +
-                        "Le informo que califica para acceder a un *Préstamo Personal con tasa preferencial y aprobación inmediata* gracias a su buen historial financiero. Es una excelente oportunidad para compra de deuda, capital de trabajo o proyectos personales.\n\n" +
-                        "¿Desea que valide en línea el monto máximo disponible para su perfil el día de hoy?\n\n" +
+                        "💎 ¡Hola, {Nombre}! Soy Betty Farroñan de Banco Santander.\n\n" +
+                        "¡Tu evaluación fue un éxito! Solo presentando tu DNI, has calificado para nuestra campaña VIP: una *Tarjeta de Crédito Santander* y un *Préstamo en Efectivo* inmediato. 🏆\n\n" +
+                        "Es la oportunidad perfecta para ordenar tus finanzas y disfrutar de promociones únicas.\n\n" +
+                        "¿Te gustaría validar tus montos aprobados en línea?\n\n" +
                         "👩‍💼 Ejecutiva: Betty Farroñan\n" +
-                        "👉 Escríbele aquí: https://wa.me/51995799743?text=Hola%20Betty,%20quiero%20validar%20mi%20monto%20de%20pr%C3%A9stamo"
+                        "👉 Solicítalo aquí: https://wa.me/51995799743?text=Hola%20Betty,%20quiero%20validar%20mis%20montos%20aprobados"
                 },
                 new PlantillaMensaje
                 {
@@ -93,11 +96,12 @@ public class AppDbContext : DbContext
                     Tipo       = "prestamo",
                     Activo     = true,
                     CuerpoTexto =
-                        "💰 Buen día, {Nombre}. Qué gusto saludarle. Le saluda Betty Farroñan, asesora comercial.\n\n" +
-                        "Hoy tengo una muy buena noticia: dispone de una campaña especial con un *cupo de financiamiento pre-evaluado* con condiciones de tasa muy competitivas en el mercado actual. Todo el proceso es digital, inmediato y seguro.\n\n" +
-                        "¿Le gustaría que coordinemos una breve llamada o prefiere que le envíe la información por este medio?\n\n" +
+                        "🎉 Buen día, {Nombre}. Qué gusto saludarte, soy Betty Farroñan.\n\n" +
+                        "Hoy tienes acceso a una oferta doble e irrepetible: *Préstamo Personal* con tasa preferencial + *Tarjeta de Crédito*, ¡ambos aprobados con una única evaluación de tu DNI! 💼💳\n\n" +
+                        "Cero trámites engorrosos, todo es digital y seguro.\n\n" +
+                        "¿Prefieres que te envíe la información por este medio o agendamos una llamada corta?\n\n" +
                         "👩‍💼 Ejecutiva: Betty Farroñan\n" +
-                        "👉 Escríbele aquí: https://wa.me/51995799743?text=Hola%20Betty,%20me%20interesa%20el%20cupo%20de%20financiamiento"
+                        "👉 Contáctame aquí: https://wa.me/51995799743?text=Hola%20Betty,%20me%20interesa%20la%20oferta%20doble"
                 },
                 new PlantillaMensaje
                 {
@@ -106,13 +110,13 @@ public class AppDbContext : DbContext
                     Tipo       = "tarjeta",
                     Activo     = true,
                     CuerpoTexto =
-                        "💳 Estimado/a {Nombre}, es un gusto saludarle. Le escribe Betty Farroñan.\n\n" +
-                        "Gracias a nuestra evaluación OSL (sin papeleos, solo con tu DNI), has sido preaprobado/a para recibir dos productos exclusivos:\n" +
-                        "✅ Tarjeta de Crédito Santander con descuentos en los mejores establecimientos y beneficios únicos.\n" +
-                        "✅ Préstamo Personal con tasa preferencial y cuotas a tu medida.\n\n" +
-                        "Ambos ya están aprobados. Solo necesito confirmar unos datos para coordinar el envío sin costo a tu domicilio.\n\n" +
+                        "🥇 ¡Hola, {Nombre}! Te saluda Betty Farroñan, tu ejecutiva Santander.\n\n" +
+                        "Tengo grandes noticias para ti: gracias a nuestra evaluación ágil (solo con tu DNI), has desbloqueado dos productos exclusivos:\n" +
+                        "✅ *Tarjeta de Crédito* (con exoneración de membresía sujeta a uso).\n" +
+                        "✅ *Préstamo Personal* (liquidez inmediata a tu cuenta).\n\n" +
+                        "Están listos para ti. ¿Coordinamos la entrega de tu tarjeta a domicilio sin costo?\n\n" +
                         "👩‍💼 Ejecutiva: Betty Farroñan\n" +
-                        "👉 Escríbele aquí: https://wa.me/51995799743?text=Hola%20Betty,%20quiero%20la%20tarjeta%20y%20el%20pr%C3%A9stamo%20Santander"
+                        "👉 Escríbeme aquí: https://wa.me/51995799743?text=Hola%20Betty,%20quiero%20coordinar%20la%20entrega%20de%20mi%20tarjeta"
                 },
                 new PlantillaMensaje
                 {
@@ -121,14 +125,12 @@ public class AppDbContext : DbContext
                     Tipo       = "tarjeta",
                     Activo     = true,
                     CuerpoTexto =
-                        "🌟 ¡Hola, {Nombre}! Soy Betty Farroñan, tu ejecutiva Santander.\n\n" +
-                        "Tengo una excelente noticia: gracias a la evaluación OSL con solo tu DNI, hoy tienes aprobada tu Tarjeta de Crédito Santander + un Préstamo Personal con condiciones especiales.\n\n" +
-                        "Con tu tarjeta disfrutarás:\n" +
-                        "🎯 Descuentos exclusivos y promociones\n" +
-                        "📦 Envío gratis a tu casa\n\n" +
-                        "Además el préstamo te da liquidez inmediata, sin trámites adicionales.\n\n" +
+                        "🌟 {Nombre}, ¡tienes una oportunidad exclusiva esperándote! Soy Betty Farroñan.\n\n" +
+                        "Tu perfil ha sido seleccionado por Banco Santander. Con una única validación de tu DNI, te otorgamos una *Tarjeta de Crédito* para tus compras diarias y un *Préstamo Efectivo* para concretar tus proyectos. 🚀💳\n\n" +
+                        "¡Sin trámites extras!\n\n" +
+                        "¿Te interesa que revisemos el simulador de cuotas y los beneficios de tu tarjeta?\n\n" +
                         "👩‍💼 Betty Farroñan\n" +
-                        "👉 Escríbele aquí: https://wa.me/51995799743?text=Hola%20Betty,%20quiero%20activar%20mi%20tarjeta%20Santander"
+                        "👉 Confirma aquí: https://wa.me/51995799743?text=Hola%20Betty,%20quiero%20revisar%20las%20cuotas%20y%20beneficios"
                 },
                 new PlantillaMensaje
                 {
@@ -137,14 +139,12 @@ public class AppDbContext : DbContext
                     Tipo       = "tarjeta",
                     Activo     = true,
                     CuerpoTexto =
-                        "⏳ {Nombre}, oportunidad exclusiva. Soy Betty Farroñan, de Santander.\n\n" +
-                        "Tu evaluación OSL con DNI te ha otorgado aprobación inmediata para la Tarjeta de Crédito Santander y un Préstamo Personal preferencial. Esta oferta es por tiempo limitado y solo para clientes seleccionados.\n\n" +
-                        "Beneficios de tu tarjeta:\n" +
-                        "🔹 Descuentos únicos\n" +
-                        "🔹 Sin costo de envío\n\n" +
-                        "¿Me confirmas para coordinar la entrega en tu domicilio? Solo tomará un momento.\n\n" +
-                        "👩‍💼 Betty Farroñan\n" +
-                        "👉 Escríbele aquí: https://wa.me/51995799743?text=Hola%20Betty,%20quiero%20confirmar%20mi%20tarjeta%20aprobada"
+                        "💳 ¡Hola, {Nombre}! Espero que estés genial. Te escribe Betty Farroñan.\n\n" +
+                        "Queremos facilitarte la vida. Por eso, con solo verificar tu DNI, Santander te ha aprobado un *Préstamo Personal* y una nueva *Tarjeta de Crédito*. 💰✨\n\n" +
+                        "Ambos productos te brindarán el respaldo financiero que mereces.\n\n" +
+                        "¿A qué hora te viene bien que te explique cómo activar tus beneficios hoy mismo?\n\n" +
+                        "👩‍💼 Ejecutiva: Betty Farroñan\n" +
+                        "👉 Escríbeme aquí: https://wa.me/51995799743?text=Hola%20Betty,%20quiero%20activar%20mis%20beneficios%20hoy"
                 },
                 new PlantillaMensaje
                 {
@@ -153,11 +153,12 @@ public class AppDbContext : DbContext
                     Tipo       = "tarjeta",
                     Activo     = true,
                     CuerpoTexto =
-                        "💳 Buen día, {Nombre}. Le saluda Betty Farroñan, asesora de Banco Santander.\n\n" +
-                        "Nos complace invitarle a nuestra campaña preferente de *Tarjetas de Crédito VISA/Mastercard con beneficios Premium*. Disfrute de bonos de bienvenida, acumulación rápida de puntos y la tranquilidad de un respaldo financiero inmediato para lo que necesite.\n\n" +
-                        "¿Le gustaría que validemos sus datos para coordinar la entrega de su tarjeta de manera gratuita y segura?\n\n" +
+                        "💎 Buen día, {Nombre}. Es un placer saludarte. Soy Betty Farroñan, de Santander.\n\n" +
+                        "Nos complace invitarte a nuestra campaña Premium. Con una sola evaluación de tu DNI, tienes acceso inmediato a una *Tarjeta de Crédito* con bonos de bienvenida y a un *Préstamo Personal* con desembolso ágil. 🌟\n\n" +
+                        "Disfruta de la tranquilidad de un respaldo total.\n\n" +
+                        "¿Te gustaría que validemos tus datos de forma segura para gestionar la entrega?\n\n" +
                         "👩‍💼 Ejecutiva: Betty Farroñan\n" +
-                        "👉 Escríbele aquí: https://wa.me/51995799743?text=Hola%20Betty,%20quiero%20la%20tarjeta%20Premium%20Santander"
+                        "👉 Escríbeme aquí: https://wa.me/51995799743?text=Hola%20Betty,%20quiero%20gestionar%20mis%20productos%20Premium"
                 }
             );
         });
