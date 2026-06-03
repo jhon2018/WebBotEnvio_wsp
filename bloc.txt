@@ -1,0 +1,21 @@
+1. Sistema de Auto-Exclusión (Blacklist) Automático 🚫
+Cómo ayuda: Si un cliente responde "no deseo", "no" o "stop", el sistema puede detectar esa palabra y agregarlo automáticamente a una lista de exclusión en tu base de datos para no volver a enviarle mensajes.
+Beneficio: Evita que sigan reportando tu número como spam, protegiendo tu línea de WhatsApp de posibles bloqueos.
+2. Auto-Respuestas Interactivas (Menús de Respuestas Rápidas) 📲
+Dado que a veces los botones oficiales tienen limitaciones, puedes usar menús numéricos simples que el usuario pueda responder fácilmente:
+
+"¡Hola [Nombre]! Tienes una línea de crédito pre-aprobada de S/. 5,000. Responde a este mensaje con el número de la opción que deseas:
+
+1 - Quiero que un asesor me llame hoy.*
+2 - Deseo ver los requisitos por aquí.*
+3 - No me interesa por el momento."*
+Cómo ayuda: El sistema lee la respuesta (ej. "1" o "2") y responde de inmediato de forma automatizada (ej. si responde "2", le envía una imagen con los requisitos).
+3. Integración con Inteligencia Artificial (ChatGPT/Gemini) 🤖
+Cómo ayuda: Cuando el cliente responda con lenguaje natural (ej. "Hola, sí me interesa pero estoy en Infocorp, ¿igual puedo?"), en lugar de una respuesta rígida, puedes enviar su texto a una IA configurada con tus reglas de negocio y responderle de manera humana y fluida de inmediato.
+4. Generación y Envío de PDF / Imágenes Personalizadas 📄
+Cómo ayuda: En lugar de enviar solo texto plano, puedes usar el sistema para generar dinámicamente un PDF personalizado (como una "carta de aprobación") o una imagen atractiva que diga: "Felicidades [Nombre], tu línea de S/. 5,000 está lista".
+Beneficio: Los mensajes con imágenes y documentos tienen una tasa de apertura y confianza mucho mayor que el texto simple.
+5. Panel de Chat en Vivo en tu React (Live Chat) 💬
+Cómo ayuda: Si el cliente hace una pregunta compleja, puedes crear una sección en tu aplicación web donde un asesor humano de tu empresa pueda ver el historial del chat y responderle directamente desde la web, sin necesidad de usar el celular físico.
+6. Recordatorios de Seguimiento (Follow-ups) ⏳
+Cómo ayuda: Si le envías el mensaje al cliente y no responde ni abre el chat en 48 horas, el sistema puede enviar de forma automática un segundo recordatorio más corto: "¡Hola! Recuerda que tu línea de crédito aprobada expira en 3 días. ¿Te gustaría activarla hoy?".
