@@ -24,6 +24,12 @@ public class DetalleEnvio
     public string NombreCliente { get; set; } = string.Empty;
 
     /// <summary>
+    /// Documento de identidad del cliente (DNI, RUC, etc.) leído del Excel.
+    /// Opcional — puede estar vacío si el archivo no incluye esta columna.
+    /// </summary>
+    public string? Documento { get; set; }
+
+    /// <summary>
     /// Texto final del mensaje DESPUÉS de la selección aleatoria de plantilla
     /// y la interpolación de {Nombre}. Se guarda para trazabilidad completa.
     /// Null hasta que el BackgroundService asigna la plantilla.
@@ -58,6 +64,14 @@ public class DetalleEnvio
     /// Null si el envío fue exitoso.
     /// </summary>
     public string? MensajeError { get; set; }
+
+    /// <summary>
+    /// Indica que el número no está registrado en WhatsApp.
+    /// Se marca true cuando WAHA responde con error de "número inexistente"
+    /// (ej: chat not found, 404, number not on WhatsApp, etc.).
+    /// Permite auditar y descargar estos contactos para gestión posterior.
+    /// </summary>
+    public bool EsNumeroNoRegistrado { get; set; } = false;
 
     // ─── Navegación ────────────────────────────────────────────────────────────
     public LoteEnvio? Lote { get; set; }

@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using WahaSender.Api.Data;
 using WahaSender.Api.Entities;
+using WahaSender.Api.Helpers;
 
 namespace WahaSender.Api.Services;
 
@@ -163,6 +164,30 @@ public sealed class WahaSenderBackgroundService : BackgroundService
                 // Guardar el mensaje asignado para trazabilidad antes de enviar.
                 detalle.MensajeAsignado = mensajeFinal;
 
+                // ── 7.5. Verificar si el número existe en WhatsApp (check-exists) ───────────
+                _logger.LogInformation("🔍 Verificando existencia en WhatsApp para {ChatId}...", chatId);
+                var (existe, errorVerificacion) = await VerificarNumeroRegistradoAsync(config, chatId, stoppingToken);
+
+                if (!existe && string.IsNullOrEmpty(errorVerificacion))
+                {
+                    // El número definitivamente no existe en WhatsApp.
+                    _logger.LogWarning("📵 Número no registrado en WhatsApp (check-exists) → {ChatId}", chatId);
+                    
+                    detalle.FechaProcesado       = DateTime.UtcNow;
+                    detalle.Estado               = EstadoDetalle.Error;
+                    detalle.MensajeError         = "Número no registrado en WhatsApp";
+                    detalle.EsNumeroNoRegistrado = true;
+
+                    await db.SaveChangesAsync(stoppingToken);
+                    await ActualizarEstadoLoteAsync(db, detalle.LoteId, stoppingToken);
+
+                    continue; // Pasar al siguiente registro de inmediato sin el delay anti-spam
+                }
+                else if (!string.IsNullOrEmpty(errorVerificacion))
+                {
+                    _logger.LogWarning("⚠️ Error al verificar número para {ChatId}: {Error}. Intentando enviar...", chatId, errorVerificacion);
+                }
+
                 // ── 8. Seleccionar imagen aleatoria (si hay alguna disponible) ──────────
                 // NOTA: sendImage requiere WAHA Plus. Con el motor WEBJS gratuito se usa
                 // sendText siempre. Si existe una imagen, se adjunta su URL al final del
@@ -207,16 +232,22 @@ public sealed class WahaSenderBackgroundService : BackgroundService
 
                 if (exitoso)
                 {
-                    detalle.Estado      = EstadoDetalle.Procesado;
-                    detalle.WahaAckCode = ackCode;
-                    detalle.MensajeError = null;
+                    detalle.Estado               = EstadoDetalle.Procesado;
+                    detalle.WahaAckCode          = ackCode;
+                    detalle.MensajeError         = null;
+                    detalle.EsNumeroNoRegistrado = false;
                     _logger.LogInformation("✅ Enviado OK → {ChatId} | ACK: {Ack}", chatId, ackCode);
                 }
                 else
                 {
-                    detalle.Estado       = EstadoDetalle.Error;
-                    detalle.MensajeError = mensajeError;
-                    _logger.LogWarning("❌ Error enviando a {ChatId}: {Error}", chatId, mensajeError);
+                    detalle.Estado               = EstadoDetalle.Error;
+                    detalle.MensajeError         = mensajeError;
+                    // Marcar si el error indica que el número no existe en WhatsApp.
+                    detalle.EsNumeroNoRegistrado = WahaErrorHelper.EsNumeroNoRegistrado(mensajeError);
+                    if (detalle.EsNumeroNoRegistrado)
+                        _logger.LogWarning("📵 Número no registrado en WhatsApp → {ChatId}", chatId);
+                    else
+                        _logger.LogWarning("❌ Error enviando a {ChatId}: {Error}", chatId, mensajeError);
                 }
 
                 await db.SaveChangesAsync(stoppingToken);
@@ -395,6 +426,61 @@ public sealed class WahaSenderBackgroundService : BackgroundService
         catch (Exception ex)
         {
             return (false, null, $"Error inesperado: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Verifica si un número existe en WhatsApp utilizando el endpoint GET /api/contacts/check-exists de WAHA.
+    /// Retorna (true, null) si existe, (false, null) si no existe, o (false, mensajeError) si hubo error HTTP.
+    /// </summary>
+    private async Task<(bool Existe, string? MensajeError)> VerificarNumeroRegistradoAsync(
+        Entities.Configuracion config,
+        string chatId,
+        CancellationToken ct)
+    {
+        try
+        {
+            var client = _httpClientFactory.CreateClient("WahaClient");
+            var baseUrl = config.WahaEndpointUrl.Replace("/sendText", "").Replace("/sendImage", "").TrimEnd('/');
+            var phone = chatId.Replace("@c.us", "");
+            var url = $"{baseUrl}/contacts/check-exists?phone={phone}&session={config.WahaSession}";
+
+            using var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Add("X-Api-Key", config.WahaApiKey);
+            request.Headers.Add("Accept", "application/json");
+
+            using var response = await client.SendAsync(request, ct);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseBody = await response.Content.ReadAsStringAsync(ct);
+                try
+                {
+                    using var doc = JsonDocument.Parse(responseBody);
+                    if (doc.RootElement.TryGetProperty("numberExists", out var existsProp))
+                    {
+                        return (existsProp.GetBoolean(), null);
+                    }
+                    return (true, null); // Fallback: si no viene el bool, intentar enviar
+                }
+                catch
+                {
+                    return (true, null);
+                }
+            }
+            else
+            {
+                var errorBody = await response.Content.ReadAsStringAsync(ct);
+                return (false, $"HTTP {(int)response.StatusCode}: {errorBody[..Math.Min(errorBody.Length, 300)]}");
+            }
+        }
+        catch (TaskCanceledException)
+        {
+            return (false, "Timeout: WAHA no respondió en 30s (check-exists)");
+        }
+        catch (Exception ex)
+        {
+            return (false, $"Error en check-exists: {ex.Message}");
         }
     }
 

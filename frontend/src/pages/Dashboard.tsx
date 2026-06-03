@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import MetricCard from '../components/MetricCard';
 import {
   getMetricas, getPlantillas, guardarPlantillasBatch,
@@ -7,6 +8,7 @@ import {
 import type { Metricas, Plantilla } from '../types';
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [metricas,   setMetricas]   = useState<Metricas | null>(null);
   const [plantillas, setPlantillas] = useState<Plantilla[]>([]);
   const [editadas,   setEditadas]   = useState<Record<number, string>>({});
@@ -132,7 +134,7 @@ export default function Dashboard() {
       </div>
 
       {/* ── Tarjetas de métricas ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
         <MetricCard
           title="Enviados Hoy"
           value={`${metricas?.enviadosHoy ?? 0} / ${metricas?.limiteMaximoDia ?? 0}`}
@@ -189,6 +191,25 @@ export default function Dashboard() {
                          text-red-300 text-xs font-medium hover:bg-red-500/30 transition-all duration-200 active:scale-95"
             >
               🔄 Reintentar Fallidos
+            </button>
+          )}
+        </MetricCard>
+
+        <MetricCard
+          title="No Registrados"
+          value={metricas?.numerosNoRegistrados ?? 0}
+          subtitle="Sin WhatsApp activo"
+          icon="📵"
+          color="orange"
+        >
+          {(metricas?.numerosNoRegistrados ?? 0) > 0 && (
+            <button
+              id="btn-ver-no-registrados"
+              onClick={() => navigate('/historial')}
+              className="mt-1 w-full py-1.5 rounded-lg bg-orange-500/20 border border-orange-500/30
+                         text-orange-300 text-xs font-medium hover:bg-orange-500/30 transition-all duration-200 active:scale-95"
+            >
+              📊 Ver Auditoría
             </button>
           )}
         </MetricCard>

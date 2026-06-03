@@ -67,3 +67,5 @@ Thumbs.db
 # Archivos temporales de Office / Excel (útiles si editas plantillas de prueba)
 ~$*
 *.tmp
+
+documentos

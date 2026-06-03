@@ -23,13 +23,14 @@ public class DashboardController : ControllerBase
         var mananaUtc = hoyUtc.AddDays(1);
 
         // Consultas en paralelo para minimizar latencia.
-        var configTask         = _db.Configuraciones.AsNoTracking().FirstOrDefaultAsync(ct);
-        var enviadosHoyTask    = _db.DetallesEnvios.CountAsync(d =>
+        var configTask            = _db.Configuraciones.AsNoTracking().FirstOrDefaultAsync(ct);
+        var enviadosHoyTask       = _db.DetallesEnvios.CountAsync(d =>
             d.Estado == EstadoDetalle.Procesado &&
             d.FechaProcesado >= hoyUtc &&
             d.FechaProcesado < mananaUtc, ct);
-        var enColaTask         = _db.DetallesEnvios.CountAsync(d => d.Estado == EstadoDetalle.Pendiente, ct);
-        var totalErroresTask   = _db.DetallesEnvios.CountAsync(d => d.Estado == EstadoDetalle.Error, ct);
+        var enColaTask            = _db.DetallesEnvios.CountAsync(d => d.Estado == EstadoDetalle.Pendiente, ct);
+        var totalErroresTask      = _db.DetallesEnvios.CountAsync(d => d.Estado == EstadoDetalle.Error, ct);
+        var noRegistradosTask     = _db.DetallesEnvios.CountAsync(d => d.EsNumeroNoRegistrado, ct);
 
         // Lote más reciente que no esté completado (el "activo").
         var loteActivoTask = _db.LotesEnvios
@@ -45,18 +46,19 @@ public class DashboardController : ControllerBase
             ))
             .FirstOrDefaultAsync(ct);
 
-        await Task.WhenAll(configTask, enviadosHoyTask, enColaTask, totalErroresTask, loteActivoTask);
+        await Task.WhenAll(configTask, enviadosHoyTask, enColaTask, totalErroresTask, noRegistradosTask, loteActivoTask);
 
         var config = await configTask;
         if (config is null) return NotFound("Configuración no encontrada.");
 
         return Ok(new MetricasDto(
-            EnviadosHoy:      await enviadosHoyTask,
-            LimiteMaximoDia:  config.LimiteDiarioActual,
-            MensajesEnCola:   await enColaTask,
-            MensajesConError: await totalErroresTask,
-            ModoEnvioActivo:  config.ModoEnvioActivo,
-            LoteActivo:       await loteActivoTask
+            EnviadosHoy:         await enviadosHoyTask,
+            LimiteMaximoDia:     config.LimiteDiarioActual,
+            MensajesEnCola:      await enColaTask,
+            MensajesConError:    await totalErroresTask,
+            NumerosNoRegistrados: await noRegistradosTask,
+            ModoEnvioActivo:     config.ModoEnvioActivo,
+            LoteActivo:          await loteActivoTask
         ));
     }
 }
@@ -64,11 +66,12 @@ public class DashboardController : ControllerBase
 // ─── DTOs ──────────────────────────────────────────────────────────────────────
 
 public record MetricasDto(
-    int           EnviadosHoy,
-    int           LimiteMaximoDia,
-    int           MensajesEnCola,
-    int           MensajesConError,
-    bool          ModoEnvioActivo,
+    int            EnviadosHoy,
+    int            LimiteMaximoDia,
+    int            MensajesEnCola,
+    int            MensajesConError,
+    int            NumerosNoRegistrados,
+    bool           ModoEnvioActivo,
     LoteActivoDto? LoteActivo
 );
 

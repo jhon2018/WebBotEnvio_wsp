@@ -5,7 +5,7 @@ interface MetricCardProps {
   value: string | number;
   subtitle?: string;
   icon: string;
-  color: 'green' | 'blue' | 'yellow' | 'red' | 'purple';
+  color: 'green' | 'blue' | 'yellow' | 'red' | 'purple' | 'orange';
   children?: ReactNode;
 }
 
@@ -15,6 +15,7 @@ const colorMap = {
   yellow: { bg: 'bg-yellow-500/10', border: 'border-yellow-500/30', text: 'text-yellow-400', icon: 'text-yellow-400' },
   red:    { bg: 'bg-red-500/10',    border: 'border-red-500/30',    text: 'text-red-400',    icon: 'text-red-400' },
   purple: { bg: 'bg-purple-500/10', border: 'border-purple-500/30', text: 'text-purple-400', icon: 'text-purple-400' },
+  orange: { bg: 'bg-orange-500/10', border: 'border-orange-500/30', text: 'text-orange-400', icon: 'text-orange-400' },
 };
 
 export default function MetricCard({ title, value, subtitle, icon, color, children }: MetricCardProps) {

@@ -184,14 +184,19 @@ public class AppDbContext : DbContext
             e.HasKey(d => d.Id);
             e.Property(d => d.NumeroCelular).IsRequired().HasMaxLength(20);
             e.Property(d => d.NombreCliente).IsRequired().HasMaxLength(200);
+            e.Property(d => d.Documento).IsRequired(false).HasMaxLength(20);
             e.Property(d => d.Estado).IsRequired().HasMaxLength(20);
             e.Property(d => d.MensajeAsignado).IsRequired(false);
             e.Property(d => d.MensajeError).IsRequired(false);
+            e.Property(d => d.EsNumeroNoRegistrado).IsRequired().HasDefaultValue(false);
 
             // Índice para acelerar las queries del BackgroundService
             // que busca registros Pendientes frecuentemente.
             e.HasIndex(d => d.Estado);
             e.HasIndex(d => new { d.Estado, d.FechaProcesado });
+
+            // Índice para el panel de auditoría de números no registrados.
+            e.HasIndex(d => d.EsNumeroNoRegistrado);
         });
     }
 }

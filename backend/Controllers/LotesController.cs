@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text;
 using ClosedXML.Excel;
 using CsvHelper;
 using CsvHelper.Configuration;
@@ -19,13 +20,13 @@ public class LotesController : ControllerBase
     private readonly ILogger<LotesController> _logger;
     private readonly IEnvioStateService _stateService;
 
-    private const int MaxFileSizeMb  = 10;
+    private const int MaxFileSizeMb    = 10;
     private const int MaxFileSizeBytes = MaxFileSizeMb * 1024 * 1024;
 
     public LotesController(AppDbContext db, ILogger<LotesController> logger, IEnvioStateService stateService)
     {
-        _db     = db;
-        _logger = logger;
+        _db           = db;
+        _logger       = logger;
         _stateService = stateService;
     }
 
@@ -96,11 +97,12 @@ public class LotesController : ControllerBase
 
             detalles.Add(new DetalleEnvio
             {
-                LoteId          = lote.Id,
-                NumeroCelular   = numeroLimpio,
-                NombreCliente   = FormatearNombreCompleto(c.Nombre),
-                Estado          = EstadoDetalle.Pendiente,
-                FechaRegistro   = DateTime.UtcNow
+                LoteId        = lote.Id,
+                NumeroCelular = numeroLimpio,
+                NombreCliente = FormatearNombreCompleto(c.Nombre),
+                Documento     = string.IsNullOrWhiteSpace(c.Documento) ? null : c.Documento.Trim(),
+                Estado        = EstadoDetalle.Pendiente,
+                FechaRegistro = DateTime.UtcNow
             });
         }
 
@@ -157,10 +159,11 @@ public class LotesController : ControllerBase
     [HttpGet("{id:guid}/detalles")]
     public async Task<ActionResult<DetallesPageDto>> GetDetalles(
         Guid id,
-        [FromQuery] int pagina  = 1,
-        [FromQuery] int tamano  = 50,
+        [FromQuery] int pagina     = 1,
+        [FromQuery] int tamano     = 50,
         [FromQuery] string? estado = null,
-        CancellationToken ct    = default)
+        [FromQuery] string? busqueda = null,
+        CancellationToken ct       = default)
     {
         var lote = await _db.LotesEnvios.AsNoTracking().FirstOrDefaultAsync(l => l.Id == id, ct);
         if (lote is null) return NotFound($"Lote {id} no encontrado.");
@@ -169,8 +172,36 @@ public class LotesController : ControllerBase
             .AsNoTracking()
             .Where(d => d.LoteId == id);
 
+        // Filtro especial: "No Registrado" no es un Estado en BD sino el flag booleano.
         if (!string.IsNullOrWhiteSpace(estado))
-            query = query.Where(d => d.Estado == estado);
+        {
+            if (estado == "No Registrado")
+                query = query.Where(d => d.EsNumeroNoRegistrado);
+            else
+                query = query.Where(d => d.Estado == estado);
+        }
+
+        if (!string.IsNullOrWhiteSpace(busqueda))
+        {
+            var term = busqueda.ToLower();
+            bool isDate = DateTime.TryParse(busqueda, out var parsedDate);
+
+            // UTC-5 para Perú.
+            DateTime? inicioUtc = null;
+            DateTime? finUtc    = null;
+
+            if (isDate)
+            {
+                inicioUtc = parsedDate.Date.AddHours(5);
+                finUtc    = inicioUtc.Value.AddDays(1);
+            }
+
+            query = query.Where(d =>
+                d.NombreCliente.ToLower().Contains(term) ||
+                d.NumeroCelular.Contains(term) ||
+                (d.Documento != null && d.Documento.Contains(term)) ||
+                (isDate && d.FechaProcesado >= inicioUtc && d.FechaProcesado < finUtc));
+        }
 
         var total = await query.CountAsync(ct);
 
@@ -179,13 +210,119 @@ public class LotesController : ControllerBase
             .Skip((pagina - 1) * tamano)
             .Take(tamano)
             .Select(d => new DetalleDto(
-                d.Id, d.NumeroCelular, d.NombreCliente,
+                d.Id, d.NumeroCelular, d.NombreCliente, d.Documento,
                 d.MensajeAsignado, d.Estado,
                 d.FechaRegistro, d.FechaProcesado,
-                d.WahaAckCode, d.MensajeError))
+                d.WahaAckCode, d.MensajeError, d.EsNumeroNoRegistrado))
             .ToListAsync(ct);
 
         return Ok(new DetallesPageDto(total, pagina, tamano, detalles));
+    }
+
+    // GET /api/lotes/no-registrados
+    // Lista paginada de todos los números marcados como no registrados en WhatsApp.
+    // Sirve para el panel de auditoría en Historial.
+    [HttpGet("no-registrados")]
+    public async Task<ActionResult<NoRegistradosPageDto>> GetNoRegistrados(
+        [FromQuery] int pagina          = 1,
+        [FromQuery] int tamano          = 50,
+        [FromQuery] Guid? loteId        = null,
+        [FromQuery] string? busqueda    = null,
+        CancellationToken ct            = default)
+    {
+        var query = _db.DetallesEnvios
+            .AsNoTracking()
+            .Include(d => d.Lote)
+            .Where(d => d.EsNumeroNoRegistrado);
+
+        if (loteId.HasValue)
+            query = query.Where(d => d.LoteId == loteId.Value);
+
+        if (!string.IsNullOrWhiteSpace(busqueda))
+        {
+            var term = busqueda.ToLower();
+            query = query.Where(d =>
+                d.NombreCliente.ToLower().Contains(term) ||
+                d.NumeroCelular.Contains(term) ||
+                (d.Documento != null && d.Documento.Contains(term)));
+        }
+
+        var total = await query.CountAsync(ct);
+
+        var items = await query
+            .OrderByDescending(d => d.FechaProcesado)
+            .Skip((pagina - 1) * tamano)
+            .Take(tamano)
+            .Select(d => new NoRegistradoDto(
+                d.Id,
+                d.NumeroCelular,
+                d.NombreCliente,
+                d.Documento,
+                d.LoteId,
+                d.Lote != null ? d.Lote.NombreArchivo : string.Empty,
+                d.MensajeError,
+                d.FechaProcesado))
+            .ToListAsync(ct);
+
+        return Ok(new NoRegistradosPageDto(total, pagina, tamano, items));
+    }
+
+    // GET /api/lotes/no-registrados/exportar
+    // Devuelve un archivo CSV con todos los números no registrados para descarga/auditoría.
+    [HttpGet("no-registrados/exportar")]
+    public async Task<IActionResult> ExportarNoRegistrados(
+        [FromQuery] Guid? loteId     = null,
+        [FromQuery] string? busqueda = null,
+        CancellationToken ct         = default)
+    {
+        var query = _db.DetallesEnvios
+            .AsNoTracking()
+            .Include(d => d.Lote)
+            .Where(d => d.EsNumeroNoRegistrado);
+
+        if (loteId.HasValue)
+            query = query.Where(d => d.LoteId == loteId.Value);
+
+        if (!string.IsNullOrWhiteSpace(busqueda))
+        {
+            var term = busqueda.ToLower();
+            query = query.Where(d =>
+                d.NombreCliente.ToLower().Contains(term) ||
+                d.NumeroCelular.Contains(term) ||
+                (d.Documento != null && d.Documento.Contains(term)));
+        }
+
+        var datos = await query
+            .OrderByDescending(d => d.FechaProcesado)
+            .Select(d => new
+            {
+                Numero    = d.NumeroCelular,
+                Nombre    = d.NombreCliente,
+                Documento = d.Documento ?? string.Empty,
+                Lote      = d.Lote != null ? d.Lote.NombreArchivo : string.Empty,
+                Error     = d.MensajeError ?? string.Empty,
+                Fecha     = d.FechaProcesado.HasValue
+                    ? d.FechaProcesado.Value.AddHours(-5).ToString("yyyy-MM-dd HH:mm:ss")
+                    : string.Empty
+            })
+            .ToListAsync(ct);
+
+        // Generar CSV manualmente (sin dependencias extra).
+        var sb = new StringBuilder();
+        sb.AppendLine("Numero,Nombre,Documento,Lote,Error,Fecha_Procesado");
+        foreach (var r in datos)
+        {
+            sb.AppendLine(
+                $"\"{EscapeCsv(r.Numero)}\",\"{EscapeCsv(r.Nombre)}\",\"{EscapeCsv(r.Documento)}\"," +
+                $"\"{EscapeCsv(r.Lote)}\",\"{EscapeCsv(r.Error)}\",\"{r.Fecha}\"");
+        }
+
+        var bytes = Encoding.UTF8.GetPreamble().Concat(Encoding.UTF8.GetBytes(sb.ToString())).ToArray();
+        var nombreArchivo = loteId.HasValue
+            ? $"no_registrados_{loteId}.csv"
+            : $"no_registrados_todos_{DateTime.UtcNow:yyyyMMdd}.csv";
+
+        return File(bytes, "text/csv; charset=utf-8", nombreArchivo);
     }
 
     // POST /api/lotes/reintentar-fallidos
@@ -203,10 +340,11 @@ public class LotesController : ControllerBase
 
         foreach (var d in fallidos)
         {
-            d.Estado         = EstadoDetalle.Pendiente;
-            d.MensajeError   = null;
-            d.FechaProcesado = null;
-            d.WahaAckCode    = null;
+            d.Estado              = EstadoDetalle.Pendiente;
+            d.MensajeError        = null;
+            d.FechaProcesado      = null;
+            d.WahaAckCode         = null;
+            d.EsNumeroNoRegistrado = false;
         }
 
         // Si el lote padre estaba Completado pero tiene fallidos reencolados,
@@ -225,7 +363,7 @@ public class LotesController : ControllerBase
 
     /// <summary>
     /// Parsea un archivo .xlsx con ClosedXML.
-    /// Busca las columnas "Numero" y "Nombre" por nombre (case-insensitive),
+    /// Busca las columnas "Numero", "Nombre" y opcionalmente "Documento" por nombre (case-insensitive),
     /// ignorando columnas extra que pueda tener el archivo.
     /// </summary>
     private static Task<List<ContactoRaw>> ParseXlsxAsync(IFormFile archivo, CancellationToken _)
@@ -239,7 +377,7 @@ public class LotesController : ControllerBase
         if (headerRow is null) return Task.FromResult(new List<ContactoRaw>());
 
         // Mapear columna por nombre (case-insensitive + trim).
-        int colNumero = -1, colNombre = -1;
+        int colNumero = -1, colNombre = -1, colDocumento = -1;
         foreach (var cell in headerRow.CellsUsed())
         {
             var header = cell.GetString().Trim().ToLowerInvariant();
@@ -247,6 +385,8 @@ public class LotesController : ControllerBase
                 colNumero = cell.Address.ColumnNumber;
             else if (header is "nombre" or "name" or "cliente" or "contacto")
                 colNombre = cell.Address.ColumnNumber;
+            else if (header is "documento" or "dni" or "ruc" or "cedula" or "cédula" or "id")
+                colDocumento = cell.Address.ColumnNumber;
         }
 
         if (colNumero == -1 || colNombre == -1)
@@ -255,11 +395,12 @@ public class LotesController : ControllerBase
         var contactos = new List<ContactoRaw>();
         foreach (var row in worksheet.RowsUsed().Skip(1)) // Skip header
         {
-            var numero = row.Cell(colNumero).GetString().Trim();
-            var nombre = row.Cell(colNombre).GetString().Trim();
+            var numero    = row.Cell(colNumero).GetString().Trim();
+            var nombre    = row.Cell(colNombre).GetString().Trim();
+            var documento = colDocumento > 0 ? row.Cell(colDocumento).GetString().Trim() : string.Empty;
 
             if (!string.IsNullOrWhiteSpace(numero))
-                contactos.Add(new ContactoRaw(numero, nombre));
+                contactos.Add(new ContactoRaw(numero, nombre, documento));
         }
 
         return Task.FromResult(contactos);
@@ -295,6 +436,7 @@ public class LotesController : ControllerBase
         var headers      = csv.HeaderRecord ?? Array.Empty<string>();
         int idxNumero    = EncontrarIndiceHeader(headers, "numero", "número", "phone", "celular", "telefono", "teléfono");
         int idxNombre    = EncontrarIndiceHeader(headers, "nombre", "name", "cliente", "contacto");
+        int idxDocumento = EncontrarIndiceHeader(headers, "documento", "dni", "ruc", "cedula", "cédula", "id");
 
         if (idxNumero == -1 || idxNombre == -1)
             return new List<ContactoRaw>();
@@ -302,10 +444,11 @@ public class LotesController : ControllerBase
         var contactos = new List<ContactoRaw>();
         while (await csv.ReadAsync())
         {
-            var numero = csv.GetField(idxNumero)?.Trim() ?? string.Empty;
-            var nombre = csv.GetField(idxNombre)?.Trim() ?? string.Empty;
+            var numero    = csv.GetField(idxNumero)?.Trim() ?? string.Empty;
+            var nombre    = csv.GetField(idxNombre)?.Trim() ?? string.Empty;
+            var documento = idxDocumento >= 0 ? csv.GetField(idxDocumento)?.Trim() ?? string.Empty : string.Empty;
             if (!string.IsNullOrWhiteSpace(numero))
-                contactos.Add(new ContactoRaw(numero, nombre));
+                contactos.Add(new ContactoRaw(numero, nombre, documento));
         }
 
         return contactos;
@@ -328,7 +471,9 @@ public class LotesController : ControllerBase
         return textInfo.ToTitleCase(nombreRaw.Trim().ToLowerInvariant());
     }
 
-    private record ContactoRaw(string Numero, string Nombre);
+    private static string EscapeCsv(string value) => value.Replace("\"", "\"\"");
+
+    private record ContactoRaw(string Numero, string Nombre, string Documento = "");
 }
 
 // ─── DTOs ──────────────────────────────────────────────────────────────────────
@@ -354,12 +499,32 @@ public record DetalleDto(
     int       Id,
     string    NumeroCelular,
     string    NombreCliente,
+    string?   Documento,
     string?   MensajeAsignado,
     string    Estado,
     DateTime  FechaRegistro,
     DateTime? FechaProcesado,
     int?      WahaAckCode,
-    string?   MensajeError
+    string?   MensajeError,
+    bool      EsNumeroNoRegistrado
+);
+
+public record NoRegistradosPageDto(
+    int                   Total,
+    int                   Pagina,
+    int                   Tamano,
+    List<NoRegistradoDto> Items
+);
+
+public record NoRegistradoDto(
+    int       Id,
+    string    NumeroCelular,
+    string    NombreCliente,
+    string?   Documento,
+    Guid      LoteId,
+    string    NombreArchivo,
+    string?   MensajeError,
+    DateTime? FechaProcesado
 );
 
 public record ReintentarDto(

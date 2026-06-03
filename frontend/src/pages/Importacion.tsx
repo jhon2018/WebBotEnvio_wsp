@@ -9,6 +9,7 @@ import type { LoteResumen } from '../types';
 interface FilaPreview {
   numero: string;
   nombre: string;
+  documento: string;
 }
 
 export default function Importacion() {
@@ -18,6 +19,8 @@ export default function Importacion() {
   const [loading,    setLoading]        = useState(false);
   const [resultado,  setResultado]      = useState<LoteResumen | null>(null);
   const [error,      setError]          = useState<string | null>(null);
+  const [totalRegistrosArchivo, setTotalRegistrosArchivo] = useState(0);
+  const [tieneColumnaDoc, setTieneColumnaDoc]             = useState(false);
 
   // ─── Carga del archivo para previsualización ─────────────────────────────
   const handleFile = async (file: File) => {
@@ -25,12 +28,16 @@ export default function Importacion() {
     setResultado(null);
     setError(null);
 
-    // Previsualización local: leer los primeros 10 registros sin enviar al backend.
+    // Previsualización local: leer registros y obtener total sin enviar al backend.
     try {
-      const filas = await leerPrimeras10Filas(file);
-      setPreview(filas);
+      const data = await leerDatosArchivo(file);
+      setPreview(data.filas);
+      setTotalRegistrosArchivo(data.total);
+      setTieneColumnaDoc(data.filas.some(f => f.documento.trim().length > 0));
     } catch {
       setPreview([]);
+      setTotalRegistrosArchivo(0);
+      setTieneColumnaDoc(false);
     }
   };
 
@@ -59,7 +66,10 @@ export default function Importacion() {
       <div>
         <h1 className="text-2xl font-bold text-white">📥 Importar Contactos</h1>
         <p className="text-slate-500 text-sm mt-1">
-          Sube tu archivo Excel (.xlsx) o CSV con las columnas <code className="text-blue-400">Numero</code> y <code className="text-blue-400">Nombre</code>.
+          Sube tu archivo Excel (.xlsx) o CSV con las columnas{' '}
+          <code className="text-blue-400">Numero</code>,{' '}
+          <code className="text-blue-400">Nombre</code> y opcionalmente{' '}
+          <code className="text-purple-400">Documento</code> (DNI/RUC).
         </p>
       </div>
 
@@ -96,12 +106,19 @@ export default function Importacion() {
             </div>
           )}
 
-          {/* Preview de las primeras 10 filas */}
+          {/* Preview de las filas */}
           {preview.length > 0 && (
             <div className="flex flex-col gap-3">
-              <h2 className="text-sm font-semibold text-slate-300">
-                👁 Vista previa — primeros {preview.length} registros
-              </h2>
+              <div className="flex items-center gap-3">
+                <h2 className="text-sm font-semibold text-slate-300">
+                  👁 Vista previa — {preview.length} de {totalRegistrosArchivo} registros encontrados en el archivo
+                </h2>
+                {tieneColumnaDoc && (
+                  <span className="px-2 py-0.5 rounded-full text-xs border border-purple-500/40 bg-purple-500/15 text-purple-300">
+                    ✓ Columna Documento detectada
+                  </span>
+                )}
+              </div>
               <div className="overflow-x-auto rounded-xl border border-slate-700/60">
                 <table className="w-full text-sm">
                   <thead>
@@ -109,6 +126,9 @@ export default function Importacion() {
                       <th className="text-left px-4 py-2.5 text-slate-400 font-medium">#</th>
                       <th className="text-left px-4 py-2.5 text-slate-400 font-medium">Número</th>
                       <th className="text-left px-4 py-2.5 text-slate-400 font-medium">Nombre</th>
+                      {tieneColumnaDoc && (
+                        <th className="text-left px-4 py-2.5 text-purple-400 font-medium">Documento</th>
+                      )}
                       <th className="text-left px-4 py-2.5 text-slate-400 font-medium">ChatId resultante</th>
                     </tr>
                   </thead>
@@ -122,6 +142,11 @@ export default function Importacion() {
                           <td className="px-4 py-2.5 text-slate-600">{i + 1}</td>
                           <td className="px-4 py-2.5 text-slate-300 font-mono">{f.numero}</td>
                           <td className="px-4 py-2.5 text-slate-300">{f.nombre}</td>
+                          {tieneColumnaDoc && (
+                            <td className="px-4 py-2.5 text-purple-300 font-mono text-xs">
+                              {f.documento || <span className="text-slate-600">—</span>}
+                            </td>
+                          )}
                           <td className="px-4 py-2.5 text-blue-400/80 font-mono text-xs">{chatId}</td>
                         </tr>
                       );
@@ -152,7 +177,7 @@ export default function Importacion() {
               {loading ? (
                 <><span className="animate-spin">⏳</span> Importando...</>
               ) : (
-                <>📤 Importar {archivo.name}</>
+                <>📤 Importar {totalRegistrosArchivo} registros</>
               )}
             </button>
           )}
@@ -175,58 +200,65 @@ export default function Importacion() {
 }
 
 
-// ─── Helper: leer primeras 10 filas del archivo localmente ───────────────────
+// ─── Helper: leer datos del archivo localmente ───────────────────
 // Se hace en el browser sin enviar al servidor para dar feedback inmediato.
 
-const COL_NUMERO_NAMES = ['numero', 'número', 'phone', 'celular', 'telefono', 'teléfono'];
-const COL_NOMBRE_NAMES = ['nombre', 'name', 'cliente', 'contacto'];
+const COL_NUMERO_NAMES   = ['numero', 'número', 'phone', 'celular', 'telefono', 'teléfono'];
+const COL_NOMBRE_NAMES   = ['nombre', 'name', 'cliente', 'contacto'];
+const COL_DOC_NAMES      = ['documento', 'dni', 'ruc', 'cedula', 'cédula', 'id'];
 
-async function leerPrimeras10Filas(file: File): Promise<FilaPreview[]> {
+async function leerDatosArchivo(file: File): Promise<{ filas: FilaPreview[], total: number }> {
   const ext = file.name.split('.').pop()?.toLowerCase();
   if (ext === 'csv') return leerCSV(file);
   if (ext === 'xlsx' || ext === 'xls') return leerXLSX(file);
-  return [];
+  return { filas: [], total: 0 };
 }
 
-async function leerXLSX(file: File): Promise<FilaPreview[]> {
+async function leerXLSX(file: File): Promise<{ filas: FilaPreview[], total: number }> {
   const buffer = await file.arrayBuffer();
   const wb = XLSX.read(buffer, { type: 'array' });
   const ws = wb.Sheets[wb.SheetNames[0]];
   // sheet_to_json incluye la fila de cabecera como clave del objeto
   const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(ws, { defval: '' });
-  if (rows.length === 0) return [];
+  if (rows.length === 0) return { filas: [], total: 0 };
 
   // Encontrar las columnas de forma case-insensitive
   const firstRow = rows[0];
   const keys = Object.keys(firstRow);
-  const keyNumero = keys.find(k => COL_NUMERO_NAMES.includes(k.trim().toLowerCase()));
-  const keyNombre = keys.find(k => COL_NOMBRE_NAMES.includes(k.trim().toLowerCase()));
+  const keyNumero   = keys.find(k => COL_NUMERO_NAMES.includes(k.trim().toLowerCase()));
+  const keyNombre   = keys.find(k => COL_NOMBRE_NAMES.includes(k.trim().toLowerCase()));
+  const keyDoc      = keys.find(k => COL_DOC_NAMES.includes(k.trim().toLowerCase()));
 
-  if (!keyNumero || !keyNombre) return [];
+  if (!keyNumero || !keyNombre) return { filas: [], total: 0 };
 
-  return rows.slice(0, 10).map(row => ({
-    numero: String(row[keyNumero] ?? ''),
-    nombre: String(row[keyNombre] ?? ''),
+  const filas = rows.slice(0, 10).map(row => ({
+    numero:    String(row[keyNumero] ?? ''),
+    nombre:    String(row[keyNombre] ?? ''),
+    documento: keyDoc ? String(row[keyDoc] ?? '') : '',
   }));
+  return { filas, total: rows.length };
 }
 
-async function leerCSV(file: File): Promise<FilaPreview[]> {
+async function leerCSV(file: File): Promise<{ filas: FilaPreview[], total: number }> {
   const text = await file.text();
   const lineas = text.split('\n').filter(l => l.trim().length > 0);
-  if (lineas.length < 2) return [];
+  if (lineas.length < 2) return { filas: [], total: 0 };
 
   const sep        = lineas[0].includes(';') ? ';' : ',';
   const headers    = lineas[0].split(sep).map(h => h.trim().toLowerCase().replace(/['"]/g, ''));
   const idxNumero  = headers.findIndex(h => COL_NUMERO_NAMES.includes(h));
   const idxNombre  = headers.findIndex(h => COL_NOMBRE_NAMES.includes(h));
+  const idxDoc     = headers.findIndex(h => COL_DOC_NAMES.includes(h));
 
-  if (idxNumero === -1 || idxNombre === -1) return [];
+  if (idxNumero === -1 || idxNombre === -1) return { filas: [], total: 0 };
 
-  return lineas.slice(1, 11).map(linea => {
+  const filas = lineas.slice(1, 11).map(linea => {
     const cols = linea.split(sep).map(c => c.trim().replace(/['"]/g, ''));
     return {
-      numero: cols[idxNumero] ?? '',
-      nombre: cols[idxNombre] ?? '',
+      numero:    cols[idxNumero] ?? '',
+      nombre:    cols[idxNombre] ?? '',
+      documento: idxDoc >= 0 ? cols[idxDoc] ?? '' : '',
     };
   });
+  return { filas, total: lineas.length - 1 };
 }

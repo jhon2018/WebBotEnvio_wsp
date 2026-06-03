@@ -62,6 +62,7 @@ export interface Metricas {
   limiteMaximoDia: number;
   mensajesEnCola: number;
   mensajesConError: number;
+  numerosNoRegistrados: number;
   modoEnvioActivo: boolean;
   loteActivo: LoteActivo | null;
 }
@@ -82,12 +83,14 @@ export interface DetalleEnvio {
   id: number;
   numeroCelular: string;
   nombreCliente: string;
+  documento: string | null;
   mensajeAsignado: string | null;
   estado: 'Pendiente' | 'Procesado' | 'Error';
   fechaRegistro: string;
   fechaProcesado: string | null;
   wahaAckCode: number | null;
   mensajeError: string | null;
+  esNumeroNoRegistrado: boolean;
 }
 
 export interface DetallesPage {
@@ -95,6 +98,26 @@ export interface DetallesPage {
   pagina: number;
   tamano: number;
   items: DetalleEnvio[];
+}
+
+// ─── Números No Registrados (Auditoría) ──────────────────────────────────────
+
+export interface NoRegistradoItem {
+  id: number;
+  numeroCelular: string;
+  nombreCliente: string;
+  documento: string | null;
+  loteId: string;
+  nombreArchivo: string;
+  mensajeError: string | null;
+  fechaProcesado: string | null;
+}
+
+export interface NoRegistradosPage {
+  total: number;
+  pagina: number;
+  tamano: number;
+  items: NoRegistradoItem[];
 }
 
 // ─── Países ──────────────────────────────────────────────────────────────────

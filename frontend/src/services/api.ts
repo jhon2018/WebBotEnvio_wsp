@@ -8,6 +8,7 @@ import type {
   Metricas,
   LoteResumen,
   DetallesPage,
+  NoRegistradosPage,
 } from '../types';
 
 
@@ -62,14 +63,36 @@ export const getDetallesLote = (
   pagina = 1,
   tamano = 50,
   estado?: string,
+  busqueda?: string,
 ) =>
   api.get<DetallesPage>(`/lotes/${id}/detalles`, {
-    params: { pagina, tamano, estado },
+    params: { pagina, tamano, estado, busqueda },
   }).then(r => r.data);
 
 export const reintentarFallidos = () =>
   api.post<{ cantidadReencolada: number; mensaje: string }>('/lotes/reintentar-fallidos')
     .then(r => r.data);
+
+// ─── Números No Registrados (Auditoría) ──────────────────────────────────────
+
+export const getNoRegistrados = (
+  pagina  = 1,
+  tamano  = 50,
+  loteId?: string,
+  busqueda?: string,
+) =>
+  api.get<NoRegistradosPage>('/lotes/no-registrados', {
+    params: { pagina, tamano, loteId, busqueda },
+  }).then(r => r.data);
+
+/** Dispara la descarga del CSV de números no registrados. */
+export const exportarNoRegistrados = (loteId?: string, busqueda?: string) => {
+  const params = new URLSearchParams();
+  if (loteId)   params.append('loteId',   loteId);
+  if (busqueda) params.append('busqueda', busqueda);
+  const url = `/api/lotes/no-registrados/exportar?${params.toString()}`;
+  window.open(url, '_blank');
+};
 
 // ─── Imágenes ─────────────────────────────────────────────────────────────────
 
@@ -85,4 +108,3 @@ export const subirImagen = (archivo: File): Promise<ImagenInfo> => {
 
 export const eliminarImagen = (nombre: string): Promise<void> =>
   api.delete(`/imagenes/${encodeURIComponent(nombre)}`).then(() => undefined);
-

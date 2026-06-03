@@ -10,9 +10,9 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index             element={<Dashboard />} />
-          <Route path="importar"   element={<Importacion />} />
-          <Route path="historial"  element={<Historial />} />
+          <Route index element={<Dashboard />} />
+          <Route path="importar" element={<Importacion />} />
+          <Route path="historial" element={<Historial />} />
           <Route path="configuracion" element={<Configuracion />} />
         </Route>
       </Routes>
